@@ -35,6 +35,18 @@ import com.io7m.jrpack.PackResult;
 import com.io7m.jrpack.PackResult.PackOK;
 import com.io7m.jrpack.Rectangle;
 
+/**
+ * <p>
+ * The <code>VariableTextRenderer</code> class implements a renderer for text
+ * using variable-width fonts.
+ * </p>
+ * <p>
+ * Internally, the renderer breaks incoming text into words and caches these
+ * into texture atlases.
+ * </p>
+ * 
+ */
+
 public final class VariableTextRenderer implements TextRenderer
 {
   /**
@@ -49,7 +61,7 @@ public final class VariableTextRenderer implements TextRenderer
     private final @Nonnull HashMap<String, Rectangle> rectangles;
     private final @Nonnull BufferedImage              bitmap;
     private final @Nonnull Graphics2D                 graphics;
-    private final @Nonnull Log                        log;
+    private final @Nonnull Log                        atlas_log;
     private boolean                                   dirty;
 
     @SuppressWarnings("synthetic-access") WordAtlas(
@@ -57,7 +69,7 @@ public final class VariableTextRenderer implements TextRenderer
       throws GLException,
         ConstraintError
     {
-      this.log = log;
+      this.atlas_log = log;
       this.texture =
         VariableTextRenderer.this.gl.allocateTextureRGBAStatic(
           "word_atlas" + VariableTextRenderer.this.atlases.size(),
@@ -87,12 +99,12 @@ public final class VariableTextRenderer implements TextRenderer
       this.graphics.setColor(Color.WHITE);
       this.graphics.setFont(VariableTextRenderer.this.font);
 
-      if (this.log.enabled(Level.LOG_DEBUG)) {
+      if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder builder = new StringBuilder();
         builder.append("cache ");
         builder.append(this);
         builder.append(" create");
-        this.log.debug(builder.toString());
+        this.atlas_log.debug(builder.toString());
       }
     }
 
@@ -106,14 +118,14 @@ public final class VariableTextRenderer implements TextRenderer
        */
 
       if (this.rectangles.containsKey(word)) {
-        if (this.log.enabled(Level.LOG_DEBUG)) {
+        if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
           final StringBuilder builder = new StringBuilder();
           builder.append("cache ");
           builder.append(this);
           builder.append(" exists '");
           builder.append(word);
           builder.append("'");
-          this.log.debug(builder.toString());
+          this.atlas_log.debug(builder.toString());
         }
         return this.rectangles.get(word);
       }
@@ -130,14 +142,14 @@ public final class VariableTextRenderer implements TextRenderer
       switch (result.type) {
         case PACK_RESULT_OK:
         {
-          if (this.log.enabled(Level.LOG_DEBUG)) {
+          if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
             final StringBuilder builder = new StringBuilder();
             builder.append("cache ");
             builder.append(this);
             builder.append(" success '");
             builder.append(word);
             builder.append("'");
-            this.log.debug(builder.toString());
+            this.atlas_log.debug(builder.toString());
           }
 
           final PackOK ok = (PackOK) result;
@@ -148,27 +160,27 @@ public final class VariableTextRenderer implements TextRenderer
         }
         case PACK_RESULT_TOO_LARGE:
         {
-          if (this.log.enabled(Level.LOG_DEBUG)) {
+          if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
             final StringBuilder builder = new StringBuilder();
             builder.append("cache ");
             builder.append(this);
             builder.append(" word too large '");
             builder.append(word);
             builder.append("'");
-            this.log.debug(builder.toString());
+            this.atlas_log.debug(builder.toString());
           }
           throw new TextCacheException(result.type, word);
         }
         case PACK_RESULT_OUT_OF_SPACE:
         {
-          if (this.log.enabled(Level.LOG_DEBUG)) {
+          if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
             final StringBuilder builder = new StringBuilder();
             builder.append("cache ");
             builder.append(this);
             builder.append(" out of space '");
             builder.append(word);
             builder.append("'");
-            this.log.debug(builder.toString());
+            this.atlas_log.debug(builder.toString());
           }
           throw new TextCacheException(result.type, word);
         }
@@ -242,7 +254,7 @@ public final class VariableTextRenderer implements TextRenderer
    * metrics, or platform specific bugs.
    */
 
-  private static final int PAD_PACK_BORDER = 1;
+  private static final int                    PAD_PACK_BORDER = 1;
 
   private final @Nonnull GLInterface          gl;
   private final @Nonnull Font                 font;
@@ -280,7 +292,7 @@ public final class VariableTextRenderer implements TextRenderer
     this.font_space_width = this.font_metrics.stringWidth(" ");
   }
 
-  public void cacheLine(
+  @Override public void cacheLine(
     final @Nonnull String line)
     throws GLException,
       ConstraintError,
@@ -304,7 +316,7 @@ public final class VariableTextRenderer implements TextRenderer
     }
   }
 
-  public void cacheUpload()
+  @Override public void cacheUpload()
     throws GLException,
       ConstraintError
   {
@@ -349,6 +361,18 @@ public final class VariableTextRenderer implements TextRenderer
     this.atlases.add(atlas);
     return new Pair<WordAtlas, Rectangle>(atlas, atlas.cacheWord(word));
   }
+
+  /**
+   * Dump the internal texture atlases to PNG files in the directory specified
+   * by <code>directory</code>.
+   * 
+   * @param directory
+   *          The output directory.
+   * @throws FileNotFoundException
+   *           Iff <code>directory</code> does not exist.
+   * @throws IOException
+   *           Iff an I/O error occurs whilst writing files.
+   */
 
   @SuppressWarnings("synthetic-access") public void debugDumpAtlasImages(
     final @Nonnull String directory)

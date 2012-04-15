@@ -111,25 +111,6 @@ public final class ShowText implements Runnable
     this.renderer.cacheUpload();
   }
 
-  @Override public void run()
-  {
-    try {
-      while (Display.isCloseRequested() == false) {
-        this.render();
-        Display.update();
-        Display.sync(60);
-      }
-    } catch (final GLException e) {
-      ErrorBox.showError("OpenGL exception", e);
-    } catch (final ConstraintError e) {
-      ErrorBox.showError("Constraint error", e);
-    } catch (final TextCacheException e) {
-      ErrorBox.showError("Text cache error", e);
-    } finally {
-      Display.destroy();
-    }
-  }
-
   private void render()
     throws GLException,
       ConstraintError,
@@ -155,6 +136,25 @@ public final class ShowText implements Runnable
     for (final String line : this.lines) {
       y -= this.renderer.getLineHeight();
       this.renderer.renderLine(10, y, line);
+    }
+  }
+
+  @Override public void run()
+  {
+    try {
+      while (Display.isCloseRequested() == false) {
+        this.render();
+        Display.update();
+        Display.sync(60);
+      }
+    } catch (final GLException e) {
+      ErrorBox.showError("OpenGL exception", e);
+    } catch (final ConstraintError e) {
+      ErrorBox.showError("Constraint error", e);
+    } catch (final TextCacheException e) {
+      ErrorBox.showError("Text cache error", e);
+    } finally {
+      Display.destroy();
     }
   }
 }
