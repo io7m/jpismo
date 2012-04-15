@@ -20,6 +20,15 @@ public final class TextCacheException extends Throwable
     this.word = word;
   }
 
+  public TextCacheException(
+    final @Nonnull PackResultCode result,
+    final char c)
+  {
+    super(result + " - " + c);
+    this.result_code = result;
+    this.word = "" + c;
+  }
+
   public @Nonnull PackResultCode getResultCode()
   {
     return this.result_code;
