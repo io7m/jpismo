@@ -254,7 +254,13 @@ public final class VariableTextRenderer implements TextRenderer
    * metrics, or platform specific bugs.
    */
 
-  private static final int                    PAD_PACK_BORDER = 1;
+  private static final int PAD_PACK_BORDER = 1;
+
+  private static String[] splitWords(
+    final @Nonnull String line)
+  {
+    return line.split("\\s+");
+  }
 
   private final @Nonnull GLInterface          gl;
   private final @Nonnull Font                 font;
@@ -264,6 +270,7 @@ public final class VariableTextRenderer implements TextRenderer
   private final @Nonnull FontMetrics          font_metrics;
   private final @Nonnull ArrayList<WordAtlas> atlases;
   private final int                           font_space_width;
+
   private final int                           texture_size;
 
   public VariableTextRenderer(
@@ -307,7 +314,7 @@ public final class VariableTextRenderer implements TextRenderer
       ConstraintError,
       TextCacheException
   {
-    final String[] words = line.split("\\s+");
+    final String[] words = VariableTextRenderer.splitWords(line);
 
     for (final String word : words) {
       if (word.equals("") == false) {
@@ -413,6 +420,29 @@ public final class VariableTextRenderer implements TextRenderer
     return this.font_metrics.getHeight();
   }
 
+  @Override public int getTextWidth(
+    final @Nonnull String line)
+    throws GLException,
+      ConstraintError,
+      TextCacheException
+  {
+    final String[] words = VariableTextRenderer.splitWords(line);
+    int width = 0;
+
+    for (int index = 0; index < words.length; ++index) {
+      final Pair<WordAtlas, Rectangle> pair = this.cacheWord(words[index]);
+      final Rectangle rect = pair.second;
+
+      if ((index + 1) != words.length) {
+        width += rect.getWidth() + this.font_space_width;
+      } else {
+        width += rect.getWidth();
+      }
+    }
+
+    return width;
+  }
+
   public void renderLine(
     final double x,
     final double y,
@@ -421,7 +451,7 @@ public final class VariableTextRenderer implements TextRenderer
       ConstraintError,
       TextCacheException
   {
-    final String[] words = line.split("\\s+");
+    final String[] words = VariableTextRenderer.splitWords(line);
     double offset = 0.0;
     final double m = 1.0 / this.texture_size;
 

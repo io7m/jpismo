@@ -134,6 +134,9 @@ public final class ShowText implements Runnable
 
     double y = 480.0 - this.renderer.getLineHeight();
     for (final String line : this.lines) {
+      final int width = this.renderer.getTextWidth(line);
+      System.out.println(String.format("width %2d : %s", width, line));
+
       y -= this.renderer.getLineHeight();
       this.renderer.renderLine(10, y, line);
     }
