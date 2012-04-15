@@ -42,7 +42,8 @@ import com.io7m.jrpack.Rectangle;
  * </p>
  * <p>
  * Internally, the renderer breaks incoming text into words and caches these
- * into texture atlases.
+ * into texture atlases. Note that spaces are not preserved: multiple
+ * successive spaces are collapsed into single spaces in the rendered text.
  * </p>
  * 
  */
