@@ -20,13 +20,13 @@ public final class TextCacheException extends Throwable
     this.word = word;
   }
 
-  public @Nonnull String getWord()
-  {
-    return this.word;
-  }
-
   public @Nonnull PackResultCode getResultCode()
   {
     return this.result_code;
+  }
+
+  public @Nonnull String getWord()
+  {
+    return this.word;
   }
 }
