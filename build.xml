@@ -1,0 +1,136 @@
+<project name="io7m-jpismo" basedir="." default="main">
+
+  <property name="dir_source"  value="src"/>
+  <property name="dir_build"   value="build"/>
+  <property name="dir_ext"     value="ext"/>
+  <property name="dir_javadoc" value="javadoc"/>
+  <property name="dir_xmldoc"  value="doc-out"/>
+
+  <property name="lwjgl_version" value="lwjgl-2.8.3"/>
+  <property name="lwjgl_jar"     value="${lwjgl_version}/jar/lwjgl.jar"/>
+
+  <property name="project_name"       value="io7m-jpismo"/>
+  <property name="project_version"    value="0.1.0"/>
+  <property name="project_jar"        value="${project_name}-${project_version}.jar"/>
+  <property name="project_source_jar" value="${project_name}-source-${project_version}.jar"/>
+
+  <path id="classpath">
+    <fileset dir="${dir_ext}" includes="*.jar"/>
+    <fileset dir="${dir_ext}" includes="${lwjgl_jar}"/>
+  </path>
+
+  <!--                                                                 -->
+  <!-- LWJGL only works on the four included platforms, unfortunately. -->
+  <!--                                                                 -->
+
+  <condition property="lwjgl_os_name" value="windows">
+    <os family="windows"/>
+  </condition>
+  <condition property="lwjgl_os_name" value="solaris">
+    <os family="unix" name="SunOS"/>
+  </condition>
+  <condition property="lwjgl_os_name" value="linux">
+    <os family="unix" name="Linux"/>
+  </condition>
+  <condition property="lwjgl_os_name" value="macosx">
+    <os family="mac"/>
+  </condition>
+
+  <fail message="LWJGL does not work on this platform, please notify the LWJGL developers!">
+    <condition>
+      <not>
+        <isset property="lwjgl_os_name"/>
+      </not>
+    </condition>
+  </fail>
+
+  <property name="lwjgl_natives" value="${lwjgl_version}/native/${lwjgl_os_name}"/>
+
+  <!--                   -->
+  <!-- Produce jar file. -->
+  <!--                   -->
+
+  <target name="jar" depends="compile">
+    <delete file="${project_jar}"/>
+    <delete file="${project_source_jar}"/>
+
+    <jar destfile="${project_jar}" basedir="build">
+      <manifest>
+        <attribute name="Specification-Title"    value="${project_name}"/>
+        <attribute name="Specification-Version"  value="${project_version}"/>
+        <attribute name="Specification-Vendor"   value="io7m.com"/>
+        <attribute name="Implementation-Title"   value="com.io7m.${project_name}"/>
+        <attribute name="Implementation-Version" value="${project_version}"/>
+        <attribute name="Implementation-Vendor"  value="io7m.com"/>
+        <section name="com/io7m/${project_name}">
+          <attribute name="Sealed" value="true"/>
+        </section>
+      </manifest>
+    </jar>
+    <jar destfile="${project_source_jar}" basedir="src"/>
+  </target>
+
+  <!--                      -->
+  <!-- Compile java source. -->
+  <!--                      -->
+
+  <target name="compile">
+    <mkdir dir="${dir_build}"/>
+    <javac srcdir="${dir_source}" destdir="${dir_build}" includeantruntime="false" classpathref="classpath"/>
+  </target>
+
+  <!--                  -->
+  <!-- Produce javadoc. -->
+  <!--                  -->
+
+  <target name="documentation">
+    <mkdir dir="${dir_javadoc}"/>
+    <javadoc sourcepath="${dir_source}" destdir="${dir_javadoc}" classpathref="classpath"/> 
+  </target>
+
+  <!--                          -->
+  <!-- Clean build environment. -->
+  <!--                          -->
+
+  <target name="clean">
+    <delete dir="${dir_build}"/>
+    <delete dir="${dir_javadoc}"/>
+    <delete dir="${dir_xmldoc}"/>
+    <delete file="${project_jar}"/>
+    <delete file="${project_source_jar}"/>
+  </target>
+
+  <!--                 -->
+  <!-- Run unit tests. -->
+  <!--                 -->
+
+  <target name="tests" depends="jar">
+    <junit printsummary="yes" fork="yes" haltonfailure="yes">
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement location="${project_jar}"/>
+      </classpath>
+      <jvmarg value="-Djava.library.path=${dir_ext}/${lwjgl_natives}"/>
+      <batchtest fork="yes">
+        <fileset dir="${dir_source}" includes="**/*Test.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!--                      -->
+  <!-- Display system info. -->
+  <!--                      -->
+
+  <target name="system">
+    <echo level="info" message="OS              ${os.name}"/>
+    <echo level="info" message="OS-Version      ${os.version}"/>
+    <echo level="info" message="OS-Arch         ${os.arch}"/>
+    <echo level="info" message="Java-Vendor     ${java.vendor}"/>
+    <echo level="info" message="Java-Version    ${java.version}"/>
+    <echo level="info" message="Java-VM         ${java.vm.name}"/>
+    <echo level="info" message="Java-VM-Version ${java.vm.version}"/>
+  </target>
+
+  <target name="main" depends="system, clean, jar, tests, documentation"/>
+
+</project>
