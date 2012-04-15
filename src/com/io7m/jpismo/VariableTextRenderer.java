@@ -412,7 +412,7 @@ public final class VariableTextRenderer implements TextRenderer
     throws GLException
   {
     final int size = this.gl.getMaximumTextureSize();
-    return Math.min(size, (int) Math.pow(2, 8));
+    return Math.min(size, (int) Math.pow(2, 10));
   }
 
   @Override public int getLineHeight()
