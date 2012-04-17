@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
@@ -20,8 +21,16 @@ import javax.imageio.stream.ImageOutputStream;
 import com.io7m.jaux.Constraints;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jaux.functional.Pair;
+import com.io7m.jcanephora.ArrayBuffer;
+import com.io7m.jcanephora.ArrayBufferAttribute;
+import com.io7m.jcanephora.ArrayBufferCursorWritable2f;
+import com.io7m.jcanephora.ArrayBufferDescriptor;
+import com.io7m.jcanephora.ArrayBufferWritableMap;
 import com.io7m.jcanephora.GLException;
 import com.io7m.jcanephora.GLInterface;
+import com.io7m.jcanephora.GLScalarType;
+import com.io7m.jcanephora.IndexBuffer;
+import com.io7m.jcanephora.IndexBufferWritableMap;
 import com.io7m.jcanephora.PixelUnpackBufferWritableMap;
 import com.io7m.jcanephora.Texture2DRGBAStatic;
 import com.io7m.jcanephora.TextureFilter;
@@ -249,18 +258,31 @@ public final class FixedTextRenderer implements TextRenderer
    * metrics, or platform specific bugs.
    */
 
-  private static final int                    PAD_PACK_BORDER = 1;
+  private static final int                     PAD_PACK_BORDER = 1;
 
-  private final @Nonnull GLInterface          gl;
-  private final @Nonnull Font                 font;
-  private final @Nonnull Log                  log;
-  private final @Nonnull BufferedImage        base_image;
-  private final @Nonnull Graphics2D           base_graphics;
-  private final @Nonnull FontMetrics          font_metrics;
-  private final @Nonnull ArrayList<CharAtlas> atlases;
-  private final int                           texture_size;
-  private final int                           character_width;
-  private final int                           character_height;
+  private static void addQuad(
+    final @Nonnull CharAtlas atlas,
+    final @Nonnull HashMap<CharAtlas, Integer> counts)
+  {
+    final Integer count = counts.get(atlas);
+    if (count != null) {
+      counts.put(atlas, Integer.valueOf(count.intValue() + 1));
+    } else {
+      counts.put(atlas, Integer.valueOf(1));
+    }
+  }
+  private final @Nonnull GLInterface           gl;
+  private final @Nonnull Font                  font;
+  private final @Nonnull Log                   log;
+  private final @Nonnull BufferedImage         base_image;
+  private final @Nonnull Graphics2D            base_graphics;
+  private final @Nonnull FontMetrics           font_metrics;
+  private final @Nonnull ArrayList<CharAtlas>  atlases;
+  private final @Nonnull ArrayBufferDescriptor descriptor;
+  private final int                            texture_size;
+  private final int                            character_width;
+
+  private final int                            character_height;
 
   public FixedTextRenderer(
     final @Nonnull GLInterface gl,
@@ -288,6 +310,15 @@ public final class FixedTextRenderer implements TextRenderer
 
     this.character_height = this.font_metrics.getHeight();
     this.character_width = this.font_metrics.charWidth(' ');
+
+    /*
+     * Initialize array buffer type descriptor for compiled texts.
+     */
+
+    this.descriptor =
+      new ArrayBufferDescriptor(new ArrayBufferAttribute[] {
+        new ArrayBufferAttribute("position", GLScalarType.TYPE_FLOAT, 2),
+        new ArrayBufferAttribute("uv", GLScalarType.TYPE_FLOAT, 2) });
   }
 
   public void cacheASCII()
@@ -411,6 +442,172 @@ public final class FixedTextRenderer implements TextRenderer
         atlas.upload();
       }
     }
+  }
+
+  @Override public ArrayList<CompiledText> textCompile(
+    final @Nonnull ArrayList<String> text)
+    throws GLException,
+      ConstraintError,
+      TextCacheException
+  {
+    final ArrayList<CompiledText> ctexts = new ArrayList<CompiledText>();
+    final HashMap<CharAtlas, Integer> quad_counts =
+      new HashMap<CharAtlas, Integer>();
+    final HashMap<CharAtlas, CompiledText> texts =
+      new HashMap<CharAtlas, CompiledText>();
+
+    /*
+     * For each line, determine the number of quads required for characters
+     * using each atlas.
+     */
+
+    for (final String line : text) {
+      final int max = line.length();
+      for (int index = 0; index < max; ++index) {
+        final Pair<CharAtlas, Rectangle> pair =
+          this.cacheCharacter(line.charAt(index));
+        FixedTextRenderer.addQuad(pair.first, quad_counts);
+      }
+    }
+
+    /*
+     * Allocate vertex and index buffers.
+     */
+
+    for (final Entry<CharAtlas, Integer> entry : quad_counts.entrySet()) {
+      final CharAtlas atlas = entry.getKey();
+      final Integer quad_count = entry.getValue();
+      final int vertx_count = quad_count.intValue() * 4;
+      final int index_count = quad_count.intValue() * 6;
+      final ArrayBuffer array_buffer =
+        this.gl.allocateArrayBuffer(vertx_count, this.descriptor);
+      final IndexBuffer index_buffer =
+        this.gl.allocateIndexBuffer(array_buffer, index_count);
+      texts.put(
+        atlas,
+        new CompiledText(array_buffer, index_buffer, atlas.getTexture()));
+    }
+
+    final float size_divisor = 1.0f / this.texture_size;
+
+    /*
+     * For each atlas α, populate a vertex buffer with all the quads that use
+     * α.
+     */
+
+    for (final Entry<CharAtlas, CompiledText> entry : texts.entrySet()) {
+      final CharAtlas wanted_atlas = entry.getKey();
+      final CompiledText comp = entry.getValue();
+      int index = 0;
+      int quad = 0;
+      int quad_base = 0;
+      float y_offset = -this.character_height;
+
+      try {
+        final ArrayBufferWritableMap map_array =
+          this.gl.mapArrayBufferWrite(comp.getVertexBuffer());
+        final IndexBufferWritableMap map_index =
+          this.gl.mapIndexBufferWrite(comp.getIndexBuffer());
+        final ArrayBufferCursorWritable2f cursor_pos =
+          map_array.getCursor2f("position");
+        final ArrayBufferCursorWritable2f cursor_uv =
+          map_array.getCursor2f("uv");
+
+        for (final String line : text) {
+          final int max = line.length();
+          float x_offset = 0.0f;
+
+          for (int char_index = 0; char_index < max; ++char_index) {
+            final Pair<CharAtlas, Rectangle> pair =
+              this.cacheCharacter(line.charAt(char_index));
+            final CharAtlas char_atlas = pair.first;
+            final Rectangle rect = pair.second;
+
+            if (char_atlas == wanted_atlas) {
+              final float u0 = rect.x0 * size_divisor;
+              final float v0 = rect.y0 * size_divisor;
+              final float u1 = (rect.x1) * size_divisor;
+              final float v1 = (rect.y1 + 1) * size_divisor;
+
+              final float x0 = x_offset;
+              final float x1 = (x0 + rect.getWidth()) - 1;
+              final float y0 = y_offset;
+              final float y1 = y_offset + rect.getHeight();
+
+              if (this.log.enabledByLevel(Level.LOG_DEBUG)) {
+                final StringBuilder t0 = new StringBuilder();
+                t0.append("tri ");
+                t0.append(quad);
+                t0.append(" [");
+                t0.append(x0);
+                t0.append(" ");
+                t0.append(y1);
+                t0.append("] [");
+                t0.append(x0);
+                t0.append(" ");
+                t0.append(y0);
+                t0.append("] [");
+                t0.append(x1);
+                t0.append(" ");
+                t0.append(y0);
+                t0.append("]");
+                this.log.debug(t0.toString());
+
+                final StringBuilder t1 = new StringBuilder();
+                t1.append("tri ");
+                t1.append(quad);
+                t1.append(" [");
+                t1.append(x0);
+                t1.append(" ");
+                t1.append(y1);
+                t1.append("] [");
+                t1.append(x1);
+                t1.append(" ");
+                t1.append(y0);
+                t1.append("] [");
+                t1.append(x1);
+                t1.append(" ");
+                t1.append(y1);
+                t1.append("]");
+                this.log.debug(t1.toString());
+              }
+
+              cursor_pos.put2f(x0, y0);
+              cursor_pos.put2f(x0, y1);
+              cursor_pos.put2f(x1, y0);
+              cursor_pos.put2f(x1, y1);
+
+              cursor_uv.put2f(u0, v1);
+              cursor_uv.put2f(u0, v0);
+              cursor_uv.put2f(u1, v1);
+              cursor_uv.put2f(u1, v0);
+
+              map_index.put(index + 0, quad_base + 1);
+              map_index.put(index + 1, quad_base + 0);
+              map_index.put(index + 2, quad_base + 2);
+
+              map_index.put(index + 3, quad_base + 1);
+              map_index.put(index + 4, quad_base + 2);
+              map_index.put(index + 5, quad_base + 3);
+
+              index += 6;
+              quad += 1;
+              quad_base = quad * 4;
+            }
+
+            x_offset += rect.getWidth();
+          }
+          y_offset -= this.character_height;
+        }
+      } finally {
+        this.gl.unmapArrayBuffer(comp.getVertexBuffer());
+        this.gl.unmapIndexBuffer(comp.getIndexBuffer());
+      }
+
+      ctexts.add(comp);
+    }
+
+    return ctexts;
   }
 
   @Override public int textGetLineHeight()
