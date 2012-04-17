@@ -262,8 +262,8 @@ public final class TextRendererAtlasVariable implements TextRenderer
         ConstraintError
     {
       final PixelUnpackBufferWritableMap map =
-        TextRendererAtlasVariable.this.gl.mapPixelUnpackBufferWrite(this.texture
-          .getBuffer());
+        TextRendererAtlasVariable.this.gl
+          .mapPixelUnpackBufferWrite(this.texture.getBuffer());
 
       try {
         final ByteBuffer target_buffer = map.getByteBuffer();
@@ -276,7 +276,8 @@ public final class TextRendererAtlasVariable implements TextRenderer
           .getBuffer());
       }
 
-      TextRendererAtlasVariable.this.gl.replaceTexture2DRGBAStatic(this.texture);
+      TextRendererAtlasVariable.this.gl
+        .replaceTexture2DRGBAStatic(this.texture);
       this.dirty = false;
     }
 
@@ -284,7 +285,8 @@ public final class TextRendererAtlasVariable implements TextRenderer
       final @Nonnull String word,
       final @Nonnull Rectangle rectangle)
     {
-      final int ascent = TextRendererAtlasVariable.this.font_metrics.getAscent();
+      final int ascent =
+        TextRendererAtlasVariable.this.font_metrics.getAscent();
       final int x = rectangle.x0;
       final int y = rectangle.y0 + ascent;
 
@@ -331,7 +333,6 @@ public final class TextRendererAtlasVariable implements TextRenderer
   private final @Nonnull ArrayList<WordAtlas>  atlases;
   private final int                            font_space_width;
   private final int                            texture_size;
-
   private final @Nonnull ArrayBufferDescriptor descriptor;
 
   public TextRendererAtlasVariable(
@@ -527,9 +528,14 @@ public final class TextRendererAtlasVariable implements TextRenderer
         this.gl.allocateArrayBuffer(vertx_count, this.descriptor);
       final IndexBuffer index_buffer =
         this.gl.allocateIndexBuffer(array_buffer, index_count);
+
       texts.put(
         atlas,
-        new CompiledText(array_buffer, index_buffer, atlas.getTexture()));
+        new CompiledText(
+          array_buffer,
+          index_buffer,
+          atlas.getTexture(),
+          false));
     }
 
     final float size_divisor = 1.0f / this.texture_size;

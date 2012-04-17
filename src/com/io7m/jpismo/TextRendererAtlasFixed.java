@@ -258,7 +258,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
    * metrics, or platform specific bugs.
    */
 
-  private static final int                     PAD_PACK_BORDER = 1;
+  private static final int PAD_PACK_BORDER = 1;
 
   private static void addQuad(
     final @Nonnull CharAtlas atlas,
@@ -271,6 +271,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
       counts.put(atlas, Integer.valueOf(1));
     }
   }
+
   private final @Nonnull GLInterface           gl;
   private final @Nonnull Font                  font;
   private final @Nonnull Log                   log;
@@ -485,7 +486,11 @@ public final class TextRendererAtlasFixed implements TextRenderer
         this.gl.allocateIndexBuffer(array_buffer, index_count);
       texts.put(
         atlas,
-        new CompiledText(array_buffer, index_buffer, atlas.getTexture()));
+        new CompiledText(
+          array_buffer,
+          index_buffer,
+          atlas.getTexture(),
+          false));
     }
 
     final float size_divisor = 1.0f / this.texture_size;
