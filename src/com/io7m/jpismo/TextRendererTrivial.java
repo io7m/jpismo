@@ -31,6 +31,20 @@ import com.io7m.jcanephora.TextureWrap;
 import com.io7m.jlog.Level;
 import com.io7m.jlog.Log;
 
+/**
+ * <p>
+ * The {@link TextRendererTrivial} class implements a renderer for text using
+ * arbitrary fonts.
+ * </p>
+ * <p>
+ * Internally, the renderer simply renders incoming text into a large texture
+ * and returns a single textured quad. There is no use of atlases and no
+ * texture re-use. This renderer is likely to be useful on systems where
+ * texture memory is plentiful and texture binds are cheap.
+ * </p>
+ * 
+ */
+
 public final class TextRendererTrivial implements TextRenderer
 {
   private final @Nonnull GLInterface           gl;
@@ -41,7 +55,9 @@ public final class TextRendererTrivial implements TextRenderer
   private final @Nonnull FontMetrics           font_metrics;
   private final @Nonnull ArrayBufferDescriptor descriptor;
 
-  private final @Nonnull AtomicInteger id_pool = new AtomicInteger(0);
+  private final @Nonnull AtomicInteger         id_pool         =
+                                                                 new AtomicInteger(
+                                                                   0);
 
   /**
    * Add PAD_PACK_BORDER to the width of the string returned by the java font
@@ -49,7 +65,7 @@ public final class TextRendererTrivial implements TextRenderer
    * metrics, or platform specific bugs.
    */
 
-  private static final int PAD_PACK_BORDER = 1;
+  private static final int                     PAD_PACK_BORDER = 1;
 
   public TextRendererTrivial(
     final @Nonnull GLInterface gl,

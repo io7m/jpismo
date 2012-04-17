@@ -44,7 +44,7 @@ import com.io7m.jrpack.Rectangle;
 
 /**
  * <p>
- * The <code>VariableTextRenderer</code> class implements a renderer for text
+ * The {@link TextRendererAtlasVariable} class implements a renderer for text
  * using variable-width fonts.
  * </p>
  * <p>

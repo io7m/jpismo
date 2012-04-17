@@ -44,7 +44,7 @@ import com.io7m.jrpack.Rectangle;
 
 /**
  * <p>
- * The <code>FixedTextRenderer</code> class implements a renderer for text
+ * The {@link TextRendererAtlasFixed} class implements a renderer for text
  * using fixed-width fonts.
  * </p>
  * <p>
