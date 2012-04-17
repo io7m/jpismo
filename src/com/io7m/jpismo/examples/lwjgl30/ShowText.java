@@ -88,11 +88,10 @@ public final class ShowText implements Runnable
     this.log_properties.put("com.io7m.jpismo.level", "LOG_DEBUG");
     this.log_properties.put("com.io7m.jpismo.logs.example", "true");
 
-    this.font = new Font("DejaVu Serif", Font.PLAIN, 10);
+    this.font = new Font("Serif", Font.PLAIN, 12);
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
     this.units = this.gl.getTextureUnits();
-
     this.renderer = new VariableTextRenderer(this.gl, this.font, this.log);
 
     for (final String name : GraphicsEnvironment
