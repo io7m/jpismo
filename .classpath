@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/io7m-jaux"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/io7m-jcanephora"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/io7m-jlog"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/io7m-jrpack"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/io7m-jexternals"/>
+	<classpathentry kind="lib" path="/io7m-jexternals/findbugs/annotations.jar"/>
+	<classpathentry kind="lib" path="/io7m-jexternals/findbugs/jsr305.jar"/>
+	<classpathentry kind="lib" path="/io7m-jexternals/lwjgl/lwjgl-2.8.3/jar/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="io7m-jexternals/lwjgl/lwjgl-2.8.3/native/linux"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
