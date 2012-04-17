@@ -23,11 +23,13 @@ public final class CompiledText implements GLResource
   private final @Nonnull ArrayBuffer         vertex_buffer;
   private final @Nonnull IndexBuffer         index_buffer;
   private final @Nonnull Texture2DRGBAStatic texture;
+  private final boolean                      texture_owned;
 
   CompiledText(
     final @Nonnull ArrayBuffer vertex_buffer,
     final @Nonnull IndexBuffer index_buffer,
-    final @Nonnull Texture2DRGBAStatic texture)
+    final @Nonnull Texture2DRGBAStatic texture,
+    final boolean texture_owned)
     throws ConstraintError
   {
     this.vertex_buffer =
@@ -35,12 +37,13 @@ public final class CompiledText implements GLResource
     this.index_buffer =
       Constraints.constrainNotNull(index_buffer, "Index buffer");
     this.texture = Constraints.constrainNotNull(texture, "Texture");
+    this.texture_owned = texture_owned;
   }
 
   /**
    * Delete the vertex and index buffers for this particular piece of compiled
-   * text (note that the texture is shared between values of type
-   * {@link CompiledText} and must not be deleted by the user).
+   * text (note that the texture may be shared between values of type
+   * {@link CompiledText} and therefore may not be deleted by the user).
    */
 
   @Override public void delete(
@@ -50,6 +53,10 @@ public final class CompiledText implements GLResource
   {
     gl.deleteArrayBuffer(this.getVertexBuffer());
     gl.deleteIndexBuffer(this.getIndexBuffer());
+
+    if (this.texture_owned) {
+      gl.deleteTexture2DRGBAStatic(this.texture);
+    }
   }
 
   /**
