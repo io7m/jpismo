@@ -16,10 +16,17 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import com.io7m.jaux.Constraints.ConstraintError;
+import com.io7m.jcanephora.ArrayBuffer;
+import com.io7m.jcanephora.BlendFunction;
 import com.io7m.jcanephora.GLException;
 import com.io7m.jcanephora.GLInterface;
 import com.io7m.jcanephora.GLInterfaceLWJGL30;
+import com.io7m.jcanephora.IndexBuffer;
+import com.io7m.jcanephora.Primitives;
+import com.io7m.jcanephora.Texture2DRGBAStatic;
+import com.io7m.jcanephora.TextureUnit;
 import com.io7m.jlog.Log;
+import com.io7m.jpismo.CompiledText;
 import com.io7m.jpismo.TextCacheException;
 import com.io7m.jpismo.VariableTextRenderer;
 
@@ -60,12 +67,14 @@ public final class ShowText implements Runnable
     }
   }
 
-  private final Log                  log;
-  private final GLInterface          gl;
-  private final VariableTextRenderer renderer;
-  private final Font                 font;
-  private final Properties           log_properties;
-  private final ArrayList<String>    lines;
+  private final Log                     log;
+  private final GLInterface             gl;
+  private final VariableTextRenderer    renderer;
+  private final Font                    font;
+  private final Properties              log_properties;
+  private final ArrayList<String>       lines;
+  private final ArrayList<CompiledText> compiled_pages;
+  private final TextureUnit[]           units;
 
   public ShowText(
     final String file_name)
@@ -77,17 +86,19 @@ public final class ShowText implements Runnable
   {
     this.log_properties = new Properties();
     this.log_properties.put("com.io7m.jpismo.level", "LOG_DEBUG");
-    this.log_properties.put("com.io7m.jpismo.logs.example", "false");
+    this.log_properties.put("com.io7m.jpismo.logs.example", "true");
 
     this.font = new Font("DejaVu Serif", Font.PLAIN, 12);
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
+    this.units = this.gl.getTextureUnits();
+
     this.renderer = new VariableTextRenderer(this.gl, this.font, this.log);
 
     for (final String name : GraphicsEnvironment
       .getLocalGraphicsEnvironment()
       .getAvailableFontFamilyNames()) {
-      this.log.debug("font " + name);
+      this.log.debug("font : " + name);
     }
 
     this.lines = new ArrayList<String>();
@@ -100,17 +111,26 @@ public final class ShowText implements Runnable
         if (line == null) {
           break;
         }
-        this.renderer.cacheLine(line);
+        this.renderer.textCacheLine(line);
         this.lines.add(line);
       }
       reader.close();
     }
 
     this.renderer.debugDumpAtlasImages("dump");
-    this.renderer.cacheUpload();
-    this.renderer.cacheUpload();
+    this.renderer.textCacheUpload();
+    this.renderer.textCacheUpload();
+
+    this.compiled_pages = this.renderer.textCompile(this.lines);
+
+    assert this.compiled_pages != null;
   }
 
+  /**
+   * @throws GLException
+   * @throws ConstraintError
+   * @throws TextCacheException
+   */
   private void render()
     throws GLException,
       ConstraintError,
@@ -126,19 +146,33 @@ public final class ShowText implements Runnable
     GL11.glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-    GL11.glTranslated(0, 0, -1);
+    GL11.glTranslated(0, 480, -1);
 
     GL11.glEnable(GL11.GL_TEXTURE_2D);
     GL11.glEnable(GL11.GL_BLEND);
-    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-    double y = 480.0 - this.renderer.getLineHeight();
-    for (final String line : this.lines) {
-      final int width = this.renderer.getTextWidth(line);
-      System.out.println(String.format("width %2d : %s", width, line));
+    this.gl.enableBlending(
+      BlendFunction.BLEND_SOURCE_ALPHA,
+      BlendFunction.BLEND_ONE_MINUS_SOURCE_ALPHA);
 
-      y -= this.renderer.getLineHeight();
-      this.renderer.renderLine(10, y, line);
+    for (final CompiledText ctext : this.compiled_pages) {
+      final Texture2DRGBAStatic texture = ctext.getTexture();
+      final ArrayBuffer ab = ctext.getVertexBuffer();
+      final IndexBuffer ib = ctext.getIndexBuffer();
+
+      this.gl.bindTexture2DRGBAStatic(this.units[0], texture);
+      this.gl.bindArrayBuffer(ab);
+
+      final int stride = ab.getDescriptor().getSize();
+      final int uv_offset = ab.getDescriptor().getAttributeOffset("uv");
+      final int po_offset = ab.getDescriptor().getAttributeOffset("position");
+
+      GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+      GL11.glVertexPointer(2, GL11.GL_FLOAT, stride, po_offset);
+      GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+      GL11.glTexCoordPointer(2, GL11.GL_FLOAT, stride, uv_offset);
+
+      this.gl.drawElements(Primitives.PRIMITIVE_TRIANGLES, ib);
     }
   }
 

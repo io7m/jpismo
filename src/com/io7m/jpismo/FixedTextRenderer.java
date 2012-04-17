@@ -48,14 +48,6 @@ import com.io7m.jrpack.Rectangle;
 public final class FixedTextRenderer implements TextRenderer
 {
   /**
-   * Add PAD_PACK_BORDER to the width of the string returned by the java font
-   * metrics, prior to packing. This is either required due to inaccurate font
-   * metrics, or platform specific bugs.
-   */
-
-  private static final int PAD_PACK_BORDER = 1;
-
-  /**
    * A CharAtlas represents a large OpenGL texture containing many packed
    * characters.
    */
@@ -251,6 +243,14 @@ public final class FixedTextRenderer implements TextRenderer
     }
   }
 
+  /**
+   * Add PAD_PACK_BORDER to the width of the string returned by the java font
+   * metrics, prior to packing. This is either required due to inaccurate font
+   * metrics, or platform specific bugs.
+   */
+
+  private static final int PAD_PACK_BORDER = 1;
+
   private final @Nonnull GLInterface          gl;
   private final @Nonnull Font                 font;
   private final @Nonnull Log                  log;
@@ -290,6 +290,16 @@ public final class FixedTextRenderer implements TextRenderer
     this.character_width = this.font_metrics.charWidth(' ');
   }
 
+  public void cacheASCII()
+    throws GLException,
+      ConstraintError,
+      TextCacheException
+  {
+    for (char c = 0; c < 0xff; ++c) {
+      this.cacheCharacter(c);
+    }
+  }
+
   private @Nonnull Pair<CharAtlas, Rectangle> cacheCharacter(
     final char c)
     throws ConstraintError,
@@ -325,15 +335,6 @@ public final class FixedTextRenderer implements TextRenderer
     return new Pair<CharAtlas, Rectangle>(atlas, atlas.cacheCharacter(c));
   }
 
-  @Override public void cacheLine(
-    final @Nonnull String line)
-    throws GLException,
-      ConstraintError,
-      TextCacheException
-  {
-    this.cacheLineInner(Constraints.constrainNotNull(line, "Line"));
-  }
-
   private void cacheLineInner(
     final @Nonnull String line)
     throws GLException,
@@ -343,17 +344,6 @@ public final class FixedTextRenderer implements TextRenderer
     final int max = line.length();
     for (int index = 0; index < max; ++index) {
       this.cacheCharacter(line.charAt(index));
-    }
-  }
-
-  @Override public void cacheUpload()
-    throws GLException,
-      ConstraintError
-  {
-    for (final CharAtlas atlas : this.atlases) {
-      if (atlas.isDirty()) {
-        atlas.upload();
-      }
     }
   }
 
@@ -403,27 +393,37 @@ public final class FixedTextRenderer implements TextRenderer
     return Math.min(size, (int) Math.pow(2, 9));
   }
 
-  @Override public int getLineHeight()
+  @Override public void textCacheLine(
+    final @Nonnull String line)
+    throws GLException,
+      ConstraintError,
+      TextCacheException
+  {
+    this.cacheLineInner(Constraints.constrainNotNull(line, "Line"));
+  }
+
+  @Override public void textCacheUpload()
+    throws GLException,
+      ConstraintError
+  {
+    for (final CharAtlas atlas : this.atlases) {
+      if (atlas.isDirty()) {
+        atlas.upload();
+      }
+    }
+  }
+
+  @Override public int textGetLineHeight()
   {
     return this.font_metrics.getHeight();
   }
 
-  @Override public int getTextWidth(
+  @Override public int textGetWidth(
     final @Nonnull String line)
     throws GLException,
       ConstraintError,
       TextCacheException
   {
     return line.length() * this.character_width;
-  }
-
-  public void cacheASCII()
-    throws GLException,
-      ConstraintError,
-      TextCacheException
-  {
-    for (char c = 0; c < 0xff; ++c) {
-      this.cacheCharacter(c);
-    }
   }
 }

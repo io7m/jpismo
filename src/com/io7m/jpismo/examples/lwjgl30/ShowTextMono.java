@@ -79,7 +79,7 @@ public final class ShowTextMono implements Runnable
     this.log_properties.put("com.io7m.jpismo.level", "LOG_DEBUG");
     this.log_properties.put("com.io7m.jpismo.logs.example", "true");
 
-    this.font = new Font("Monospaced", Font.PLAIN, 12);
+    this.font = new Font("Monospaced", Font.PLAIN, 24);
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
     this.renderer = new FixedTextRenderer(this.gl, this.font, this.log);
@@ -101,15 +101,15 @@ public final class ShowTextMono implements Runnable
         if (line == null) {
           break;
         }
-        this.renderer.cacheLine(line);
+        this.renderer.textCacheLine(line);
         this.lines.add(line);
       }
       reader.close();
     }
 
     this.renderer.debugDumpAtlasImages("dump");
-    this.renderer.cacheUpload();
-    this.renderer.cacheUpload();
+    this.renderer.textCacheUpload();
+    this.renderer.textCacheUpload();
   }
 
   /**

@@ -1,5 +1,7 @@
 package com.io7m.jpismo;
 
+import java.util.ArrayList;
+
 import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
@@ -20,7 +22,7 @@ public interface TextRenderer
    *           Iff an OpenGL error occurs.
    */
 
-  void cacheLine(
+  void textCacheLine(
     final @Nonnull String line)
     throws GLException,
       ConstraintError,
@@ -35,16 +37,41 @@ public interface TextRenderer
    *           Iff an OpenGL error occurs.
    */
 
-  void cacheUpload()
+  void textCacheUpload()
     throws GLException,
       ConstraintError;
+
+  /**
+   * Compile the given text into a set of textures and vertex buffer objects.
+   * 
+   * @See {@link CompiledText}.
+   * 
+   * @param text
+   *          An array of lines.
+   * @throws GLException
+   *           Iff an OpenGL error occurs.
+   * @throws ConstraintError
+   *           Iff any of the following conditions hold:
+   *           <ul>
+   *           <li><code>text == null</code></li>
+   *           <li><code>∃n. text.get(n) == null</code></li>
+   *           </ul>
+   * @throws TextCacheException
+   *           Iff an error occurs whilst caching the input text.
+   */
+
+  @Nonnull ArrayList<CompiledText> textCompile(
+    final @Nonnull ArrayList<String> text)
+    throws GLException,
+      ConstraintError,
+      TextCacheException;
 
   /**
    * Return the maximum height in pixels of text rendered with the current
    * renderer.
    */
 
-  int getLineHeight();
+  int textGetLineHeight();
 
   /**
    * Return the number of pixels the given text would take when rendered with
@@ -61,7 +88,7 @@ public interface TextRenderer
    *           Iff an OpenGL error occurs.
    */
 
-  int getTextWidth(
+  int textGetWidth(
     final @Nonnull String line)
     throws GLException,
       ConstraintError,
