@@ -88,7 +88,7 @@ public final class ShowText implements Runnable
     this.log_properties.put("com.io7m.jpismo.level", "LOG_DEBUG");
     this.log_properties.put("com.io7m.jpismo.logs.example", "true");
 
-    this.font = new Font("DejaVu Serif", Font.PLAIN, 12);
+    this.font = new Font("DejaVu Serif", Font.PLAIN, 10);
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
     this.units = this.gl.getTextureUnits();
@@ -111,30 +111,19 @@ public final class ShowText implements Runnable
         if (line == null) {
           break;
         }
-        this.renderer.textCacheLine(line);
         this.lines.add(line);
       }
       reader.close();
     }
 
-    this.renderer.debugDumpAtlasImages("dump");
-    this.renderer.textCacheUpload();
-    this.renderer.textCacheUpload();
-
     this.compiled_pages = this.renderer.textCompile(this.lines);
-
-    assert this.compiled_pages != null;
+    this.renderer.textCacheUpload();
+    this.renderer.debugDumpAtlasImages("dump");
   }
 
-  /**
-   * @throws GLException
-   * @throws ConstraintError
-   * @throws TextCacheException
-   */
   private void render()
     throws GLException,
-      ConstraintError,
-      TextCacheException
+      ConstraintError
   {
     GL11.glMatrixMode(GL11.GL_PROJECTION);
     GL11.glLoadIdentity();
@@ -188,8 +177,6 @@ public final class ShowText implements Runnable
       ErrorBox.showError("OpenGL exception", e);
     } catch (final ConstraintError e) {
       ErrorBox.showError("Constraint error", e);
-    } catch (final TextCacheException e) {
-      ErrorBox.showError("Text cache error", e);
     } finally {
       Display.destroy();
     }
