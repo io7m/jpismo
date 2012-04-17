@@ -450,7 +450,7 @@ public final class VariableTextRenderer implements TextRenderer
   }
 
   /**
-   * Decide the texture size to use. Attempt to use 1mb textures (2 ^ 8) but
+   * Decide the texture size to use. Attempt to use 256k textures (2 ^ 8) but
    * use less if the implementation cannot support them.
    * 
    * @return The texture size.

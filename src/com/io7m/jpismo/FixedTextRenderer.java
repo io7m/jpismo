@@ -249,7 +249,7 @@ public final class FixedTextRenderer implements TextRenderer
    * metrics, or platform specific bugs.
    */
 
-  private static final int PAD_PACK_BORDER = 1;
+  private static final int                    PAD_PACK_BORDER = 1;
 
   private final @Nonnull GLInterface          gl;
   private final @Nonnull Font                 font;
@@ -378,7 +378,7 @@ public final class FixedTextRenderer implements TextRenderer
   }
 
   /**
-   * Decide the texture size to use. Attempt to use 512k textures (2 ^ 9) but
+   * Decide the texture size to use. Attempt to use 256k textures (2 ^ 8) but
    * use less if the implementation cannot support them.
    * 
    * @return The texture size.
@@ -390,7 +390,7 @@ public final class FixedTextRenderer implements TextRenderer
     throws GLException
   {
     final int size = this.gl.getMaximumTextureSize();
-    return Math.min(size, (int) Math.pow(2, 9));
+    return Math.min(size, (int) Math.pow(2, 8));
   }
 
   @Override public void textCacheLine(
