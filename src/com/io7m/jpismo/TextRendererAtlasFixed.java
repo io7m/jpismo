@@ -54,7 +54,7 @@ import com.io7m.jrpack.Rectangle;
  * 
  */
 
-public final class FixedTextRenderer implements TextRenderer
+public final class TextRendererAtlasFixed implements TextRenderer
 {
   /**
    * A CharAtlas represents a large OpenGL texture containing many packed
@@ -78,10 +78,10 @@ public final class FixedTextRenderer implements TextRenderer
     {
       this.atlas_log = log;
       this.texture =
-        FixedTextRenderer.this.gl.allocateTextureRGBAStatic(
-          "char_atlas" + FixedTextRenderer.this.atlases.size(),
-          FixedTextRenderer.this.texture_size,
-          FixedTextRenderer.this.texture_size,
+        TextRendererAtlasFixed.this.gl.allocateTextureRGBAStatic(
+          "char_atlas" + TextRendererAtlasFixed.this.atlases.size(),
+          TextRendererAtlasFixed.this.texture_size,
+          TextRendererAtlasFixed.this.texture_size,
           TextureWrap.TEXTURE_WRAP_REPEAT,
           TextureWrap.TEXTURE_WRAP_REPEAT,
           TextureFilter.TEXTURE_FILTER_NEAREST,
@@ -89,22 +89,22 @@ public final class FixedTextRenderer implements TextRenderer
 
       this.packer =
         new Pack1D(
-          FixedTextRenderer.this.texture_size,
-          FixedTextRenderer.this.texture_size,
-          FixedTextRenderer.this.character_height);
+          TextRendererAtlasFixed.this.texture_size,
+          TextRendererAtlasFixed.this.texture_size,
+          TextRendererAtlasFixed.this.character_height);
 
       this.rectangles = new HashMap<Character, Rectangle>();
       this.dirty = false;
 
       this.bitmap =
         new BufferedImage(
-          FixedTextRenderer.this.texture_size,
-          FixedTextRenderer.this.texture_size,
+          TextRendererAtlasFixed.this.texture_size,
+          TextRendererAtlasFixed.this.texture_size,
           BufferedImage.TYPE_4BYTE_ABGR);
 
       this.graphics = this.bitmap.createGraphics();
       this.graphics.setColor(Color.WHITE);
-      this.graphics.setFont(FixedTextRenderer.this.font);
+      this.graphics.setFont(TextRendererAtlasFixed.this.font);
 
       if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder builder = new StringBuilder();
@@ -140,8 +140,8 @@ public final class FixedTextRenderer implements TextRenderer
       }
 
       final PackResult result =
-        this.packer.insert(FixedTextRenderer.this.character_width
-          + FixedTextRenderer.PAD_PACK_BORDER);
+        this.packer.insert(TextRendererAtlasFixed.this.character_width
+          + TextRendererAtlasFixed.PAD_PACK_BORDER);
 
       switch (result.type) {
         case PACK_RESULT_OK:
@@ -157,7 +157,7 @@ public final class FixedTextRenderer implements TextRenderer
           }
 
           final PackOK ok = (PackOK) result;
-          assert (ok.rectangle.getWidth() == FixedTextRenderer.this.character_width);
+          assert (ok.rectangle.getWidth() == TextRendererAtlasFixed.this.character_width);
           this.writeChar(character, ok.rectangle);
           this.rectangles.put(boxed, ok.rectangle);
           return ok.rectangle;
@@ -218,7 +218,7 @@ public final class FixedTextRenderer implements TextRenderer
         ConstraintError
     {
       final PixelUnpackBufferWritableMap map =
-        FixedTextRenderer.this.gl.mapPixelUnpackBufferWrite(this.texture
+        TextRendererAtlasFixed.this.gl.mapPixelUnpackBufferWrite(this.texture
           .getBuffer());
 
       try {
@@ -228,11 +228,11 @@ public final class FixedTextRenderer implements TextRenderer
         target_buffer.put(source_buffer.getData());
         target_buffer.rewind();
       } finally {
-        FixedTextRenderer.this.gl.unmapPixelUnpackBuffer(this.texture
+        TextRendererAtlasFixed.this.gl.unmapPixelUnpackBuffer(this.texture
           .getBuffer());
       }
 
-      FixedTextRenderer.this.gl.replaceTexture2DRGBAStatic(this.texture);
+      TextRendererAtlasFixed.this.gl.replaceTexture2DRGBAStatic(this.texture);
       this.dirty = false;
     }
 
@@ -240,7 +240,7 @@ public final class FixedTextRenderer implements TextRenderer
       final char character,
       final @Nonnull Rectangle rectangle)
     {
-      final int ascent = FixedTextRenderer.this.font_metrics.getAscent();
+      final int ascent = TextRendererAtlasFixed.this.font_metrics.getAscent();
       final int x = rectangle.x0;
       final int y = rectangle.y0 + ascent;
 
@@ -284,7 +284,7 @@ public final class FixedTextRenderer implements TextRenderer
 
   private final int                            character_height;
 
-  public FixedTextRenderer(
+  public TextRendererAtlasFixed(
     final @Nonnull GLInterface gl,
     final @Nonnull Font font,
     final @Nonnull Log log)
@@ -466,7 +466,7 @@ public final class FixedTextRenderer implements TextRenderer
       for (int index = 0; index < max; ++index) {
         final Pair<CharAtlas, Rectangle> pair =
           this.cacheCharacter(line.charAt(index));
-        FixedTextRenderer.addQuad(pair.first, quad_counts);
+        TextRendererAtlasFixed.addQuad(pair.first, quad_counts);
       }
     }
 
