@@ -55,7 +55,7 @@ import com.io7m.jrpack.Rectangle;
  * 
  */
 
-public final class VariableTextRenderer implements TextRenderer
+public final class TextRendererAtlasVariable implements TextRenderer
 {
   /**
    * A WordAtlas represents a large OpenGL texture containing many packed
@@ -80,13 +80,13 @@ public final class VariableTextRenderer implements TextRenderer
     {
       this.atlas_log = log;
 
-      this.id = VariableTextRenderer.this.atlases.size();
+      this.id = TextRendererAtlasVariable.this.atlases.size();
 
       this.texture =
-        VariableTextRenderer.this.gl.allocateTextureRGBAStatic(
+        TextRendererAtlasVariable.this.gl.allocateTextureRGBAStatic(
           "word_atlas" + this.id,
-          VariableTextRenderer.this.texture_size,
-          VariableTextRenderer.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
           TextureWrap.TEXTURE_WRAP_REPEAT,
           TextureWrap.TEXTURE_WRAP_REPEAT,
           TextureFilter.TEXTURE_FILTER_NEAREST,
@@ -94,22 +94,22 @@ public final class VariableTextRenderer implements TextRenderer
 
       this.packer =
         new Pack1D(
-          VariableTextRenderer.this.texture_size,
-          VariableTextRenderer.this.texture_size,
-          VariableTextRenderer.this.textGetLineHeight());
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.textGetLineHeight());
 
       this.rectangles = new HashMap<String, Rectangle>();
       this.dirty = false;
 
       this.bitmap =
         new BufferedImage(
-          VariableTextRenderer.this.texture_size,
-          VariableTextRenderer.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
           BufferedImage.TYPE_4BYTE_ABGR);
 
       this.graphics = this.bitmap.createGraphics();
       this.graphics.setColor(Color.WHITE);
-      this.graphics.setFont(VariableTextRenderer.this.font);
+      this.graphics.setFont(TextRendererAtlasVariable.this.font);
 
       if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder builder = new StringBuilder();
@@ -147,8 +147,8 @@ public final class VariableTextRenderer implements TextRenderer
        */
 
       final int width =
-        VariableTextRenderer.this.font_metrics.stringWidth(word)
-          + VariableTextRenderer.PAD_PACK_BORDER;
+        TextRendererAtlasVariable.this.font_metrics.stringWidth(word)
+          + TextRendererAtlasVariable.PAD_PACK_BORDER;
 
       final PackResult result = this.packer.insert(width);
       switch (result.type) {
@@ -224,9 +224,9 @@ public final class VariableTextRenderer implements TextRenderer
       return true;
     }
 
-    private VariableTextRenderer getOuterType()
+    private TextRendererAtlasVariable getOuterType()
     {
-      return VariableTextRenderer.this;
+      return TextRendererAtlasVariable.this;
     }
 
     Texture2DRGBAStatic getTexture()
@@ -262,7 +262,7 @@ public final class VariableTextRenderer implements TextRenderer
         ConstraintError
     {
       final PixelUnpackBufferWritableMap map =
-        VariableTextRenderer.this.gl.mapPixelUnpackBufferWrite(this.texture
+        TextRendererAtlasVariable.this.gl.mapPixelUnpackBufferWrite(this.texture
           .getBuffer());
 
       try {
@@ -272,11 +272,11 @@ public final class VariableTextRenderer implements TextRenderer
         target_buffer.put(source_buffer.getData());
         target_buffer.rewind();
       } finally {
-        VariableTextRenderer.this.gl.unmapPixelUnpackBuffer(this.texture
+        TextRendererAtlasVariable.this.gl.unmapPixelUnpackBuffer(this.texture
           .getBuffer());
       }
 
-      VariableTextRenderer.this.gl.replaceTexture2DRGBAStatic(this.texture);
+      TextRendererAtlasVariable.this.gl.replaceTexture2DRGBAStatic(this.texture);
       this.dirty = false;
     }
 
@@ -284,7 +284,7 @@ public final class VariableTextRenderer implements TextRenderer
       final @Nonnull String word,
       final @Nonnull Rectangle rectangle)
     {
-      final int ascent = VariableTextRenderer.this.font_metrics.getAscent();
+      final int ascent = TextRendererAtlasVariable.this.font_metrics.getAscent();
       final int x = rectangle.x0;
       final int y = rectangle.y0 + ascent;
 
@@ -334,7 +334,7 @@ public final class VariableTextRenderer implements TextRenderer
 
   private final @Nonnull ArrayBufferDescriptor descriptor;
 
-  public VariableTextRenderer(
+  public TextRendererAtlasVariable(
     final @Nonnull GLInterface gl,
     final @Nonnull Font font,
     final @Nonnull Log log)
@@ -346,7 +346,7 @@ public final class VariableTextRenderer implements TextRenderer
     this.log =
       new Log(Constraints.constrainNotNull(log, "Log interface"), "vtext");
 
-    this.atlases = new ArrayList<VariableTextRenderer.WordAtlas>();
+    this.atlases = new ArrayList<TextRendererAtlasVariable.WordAtlas>();
     this.texture_size = this.decideTextureSize();
 
     /*
@@ -375,7 +375,7 @@ public final class VariableTextRenderer implements TextRenderer
       ConstraintError,
       TextCacheException
   {
-    final String[] words = VariableTextRenderer.splitWords(line);
+    final String[] words = TextRendererAtlasVariable.splitWords(line);
 
     for (final String word : words) {
       if (word.equals("") == false) {
@@ -506,10 +506,10 @@ public final class VariableTextRenderer implements TextRenderer
      */
 
     for (final String line : text) {
-      final String[] words = VariableTextRenderer.splitWords(line);
+      final String[] words = TextRendererAtlasVariable.splitWords(line);
       for (final String word : words) {
         final Pair<WordAtlas, Rectangle> pair = this.cacheWord(word);
-        VariableTextRenderer.addQuad(pair.first, quad_counts);
+        TextRendererAtlasVariable.addQuad(pair.first, quad_counts);
       }
       word_cache.put(line, words);
     }
@@ -664,7 +664,7 @@ public final class VariableTextRenderer implements TextRenderer
       ConstraintError,
       TextCacheException
   {
-    final String[] words = VariableTextRenderer.splitWords(line);
+    final String[] words = TextRendererAtlasVariable.splitWords(line);
     int width = 0;
 
     for (int index = 0; index < words.length; ++index) {

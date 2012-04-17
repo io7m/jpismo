@@ -28,7 +28,7 @@ import com.io7m.jcanephora.TextureUnit;
 import com.io7m.jlog.Log;
 import com.io7m.jpismo.CompiledText;
 import com.io7m.jpismo.TextCacheException;
-import com.io7m.jpismo.VariableTextRenderer;
+import com.io7m.jpismo.TextRendererAtlasVariable;
 
 public final class ShowText implements Runnable
 {
@@ -69,7 +69,7 @@ public final class ShowText implements Runnable
 
   private final Log                     log;
   private final GLInterface             gl;
-  private final VariableTextRenderer    renderer;
+  private final TextRendererAtlasVariable    renderer;
   private final Font                    font;
   private final Properties              log_properties;
   private final ArrayList<String>       lines;
@@ -92,7 +92,7 @@ public final class ShowText implements Runnable
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
     this.units = this.gl.getTextureUnits();
-    this.renderer = new VariableTextRenderer(this.gl, this.font, this.log);
+    this.renderer = new TextRendererAtlasVariable(this.gl, this.font, this.log);
 
     for (final String name : GraphicsEnvironment
       .getLocalGraphicsEnvironment()

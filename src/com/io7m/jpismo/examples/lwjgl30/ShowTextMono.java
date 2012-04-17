@@ -27,7 +27,7 @@ import com.io7m.jcanephora.Texture2DRGBAStatic;
 import com.io7m.jcanephora.TextureUnit;
 import com.io7m.jlog.Log;
 import com.io7m.jpismo.CompiledText;
-import com.io7m.jpismo.FixedTextRenderer;
+import com.io7m.jpismo.TextRendererAtlasFixed;
 import com.io7m.jpismo.TextCacheException;
 
 public final class ShowTextMono implements Runnable
@@ -69,7 +69,7 @@ public final class ShowTextMono implements Runnable
 
   private final Log                     log;
   private final GLInterface             gl;
-  private final FixedTextRenderer       renderer;
+  private final TextRendererAtlasFixed       renderer;
   private final Font                    font;
   private final Properties              log_properties;
   private final ArrayList<String>       lines;
@@ -91,7 +91,7 @@ public final class ShowTextMono implements Runnable
     this.font = new Font("Monospaced", Font.PLAIN, 11);
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
-    this.renderer = new FixedTextRenderer(this.gl, this.font, this.log);
+    this.renderer = new TextRendererAtlasFixed(this.gl, this.font, this.log);
     this.units = this.gl.getTextureUnits();
 
     for (final String name : GraphicsEnvironment
