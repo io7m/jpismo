@@ -7,6 +7,37 @@ import javax.annotation.Nonnull;
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jcanephora.GLException;
 
+/**
+ * <p>
+ * The common interface supported by all text renderers.
+ * </p>
+ * <p>
+ * Renderers will typically take lines of text as input and will then
+ * compile/cache the text into an efficient internal format (usually as some
+ * sort of GPU pixel buffer). In order to give developer control over GPU
+ * traffic, the interface requires the developer to:
+ * <ol>
+ * <li>Perform any number of "cache" operations (
+ * {@link TextRenderer#textCacheLine(String)},
+ * {@link TextRenderer#textCompile(ArrayList)}, etc).</li>
+ * <li>Perform an "upload" operation ({@link TextRenderer#textCacheUpload()}).
+ * </li>
+ * </ol>
+ * </p>
+ * <p>
+ * It is then possible to render text using vertex buffer objects and textures
+ * retrieved from the compiled data ({@link CompiledText}).
+ * </p>
+ * <p>
+ * As is most probably obvious, the "cache" operations modify internal caches,
+ * whilst "upload" operations bulk upload GPU data. Note that "cache"
+ * operations may perform operations on the GPU, but renderers are expected to
+ * keep these operations to a minimum.
+ * </p>
+ * 
+ * @see CompiledText
+ */
+
 public interface TextRenderer
 {
   /**
@@ -44,7 +75,7 @@ public interface TextRenderer
   /**
    * Compile the given text into a set of textures and vertex buffer objects.
    * 
-   * @See {@link CompiledText}.
+   * @see CompiledText
    * 
    * @param text
    *          An array of lines.

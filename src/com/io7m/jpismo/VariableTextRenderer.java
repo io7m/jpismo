@@ -421,7 +421,8 @@ public final class VariableTextRenderer implements TextRenderer
 
   /**
    * Dump the internal texture atlases to PNG files in the directory specified
-   * by <code>directory</code>.
+   * by <code>directory</code>. This is only of use for debugging the
+   * implementation of the text renderer.
    * 
    * @param directory
    *          The output directory.
