@@ -13,9 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public final class ErrorBox
+final class ErrorBox
 {
-  public static void showError(
+  static void showError(
     final @Nonnull String title,
     final @Nonnull Throwable e)
   {
