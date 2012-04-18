@@ -27,10 +27,10 @@ import com.io7m.jcanephora.Texture2DRGBAStatic;
 import com.io7m.jcanephora.TextureUnit;
 import com.io7m.jlog.Log;
 import com.io7m.jpismo.CompiledText;
-import com.io7m.jpismo.TextRendererAtlasFixed;
 import com.io7m.jpismo.TextCacheException;
+import com.io7m.jpismo.TextRendererAtlasFixed;
 
-public final class ShowTextMono implements Runnable
+final class ShowTextMono implements Runnable
 {
   private static final int SCREEN_WIDTH  = 640;
   private static final int SCREEN_HEIGHT = 480;
@@ -69,7 +69,7 @@ public final class ShowTextMono implements Runnable
 
   private final Log                     log;
   private final GLInterface             gl;
-  private final TextRendererAtlasFixed       renderer;
+  private final TextRendererAtlasFixed  renderer;
   private final Font                    font;
   private final Properties              log_properties;
   private final ArrayList<String>       lines;

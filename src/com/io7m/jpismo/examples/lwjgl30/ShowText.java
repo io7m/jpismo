@@ -30,7 +30,7 @@ import com.io7m.jpismo.CompiledText;
 import com.io7m.jpismo.TextCacheException;
 import com.io7m.jpismo.TextRendererAtlasVariable;
 
-public final class ShowText implements Runnable
+final class ShowText implements Runnable
 {
   private static final int SCREEN_WIDTH  = 640;
   private static final int SCREEN_HEIGHT = 480;
@@ -67,14 +67,14 @@ public final class ShowText implements Runnable
     }
   }
 
-  private final Log                     log;
-  private final GLInterface             gl;
-  private final TextRendererAtlasVariable    renderer;
-  private final Font                    font;
-  private final Properties              log_properties;
-  private final ArrayList<String>       lines;
-  private final ArrayList<CompiledText> compiled_pages;
-  private final TextureUnit[]           units;
+  private final Log                       log;
+  private final GLInterface               gl;
+  private final TextRendererAtlasVariable renderer;
+  private final Font                      font;
+  private final Properties                log_properties;
+  private final ArrayList<String>         lines;
+  private final ArrayList<CompiledText>   compiled_pages;
+  private final TextureUnit[]             units;
 
   public ShowText(
     final String file_name)
@@ -92,7 +92,8 @@ public final class ShowText implements Runnable
     this.log = new Log(this.log_properties, "com.io7m.jpismo", "example");
     this.gl = new GLInterfaceLWJGL30(this.log);
     this.units = this.gl.getTextureUnits();
-    this.renderer = new TextRendererAtlasVariable(this.gl, this.font, this.log);
+    this.renderer =
+      new TextRendererAtlasVariable(this.gl, this.font, this.log);
 
     for (final String name : GraphicsEnvironment
       .getLocalGraphicsEnvironment()

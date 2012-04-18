@@ -30,7 +30,7 @@ import com.io7m.jpismo.CompiledText;
 import com.io7m.jpismo.TextCacheException;
 import com.io7m.jpismo.TextRendererTrivial;
 
-public final class ShowTextTrivial implements Runnable
+final class ShowTextTrivial implements Runnable
 {
   private static final int SCREEN_WIDTH  = 640;
   private static final int SCREEN_HEIGHT = 480;
