@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jaux.Constraints.ConstraintError;
 import com.io7m.jcanephora.GLException;
+import com.io7m.jcanephora.GLResource;
 
 /**
  * <p>
@@ -38,7 +39,7 @@ import com.io7m.jcanephora.GLException;
  * @see CompiledText
  */
 
-public interface TextRenderer
+public interface TextRenderer extends GLResource
 {
   /**
    * Cache the given text in a renderer-specific manner.

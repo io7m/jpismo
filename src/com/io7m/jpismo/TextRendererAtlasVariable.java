@@ -28,6 +28,7 @@ import com.io7m.jcanephora.ArrayBufferDescriptor;
 import com.io7m.jcanephora.ArrayBufferWritableMap;
 import com.io7m.jcanephora.GLException;
 import com.io7m.jcanephora.GLInterface;
+import com.io7m.jcanephora.GLResource;
 import com.io7m.jcanephora.GLScalarType;
 import com.io7m.jcanephora.IndexBuffer;
 import com.io7m.jcanephora.IndexBufferWritableMap;
@@ -62,7 +63,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
    * words.
    */
 
-  private final class WordAtlas
+  private final class WordAtlas implements GLResource
   {
     private final @Nonnull Texture2DRGBAStatic        texture;
     private final @Nonnull Pack1D                     packer;
@@ -200,6 +201,14 @@ public final class TextRendererAtlasVariable implements TextRenderer
 
       /* UNREACHABLE */
       throw new AssertionError("unreachable code!");
+    }
+
+    @Override public void delete(
+      final @Nonnull GLInterface gli)
+      throws ConstraintError,
+        GLException
+    {
+      this.texture.delete(gli);
     }
 
     @Override public boolean equals(
@@ -465,6 +474,16 @@ public final class TextRendererAtlasVariable implements TextRenderer
   {
     final int size = this.gl.getMaximumTextureSize();
     return Math.min(size, (int) Math.pow(2, 8));
+  }
+
+  @Override public void delete(
+    final @Nonnull GLInterface gli)
+    throws ConstraintError,
+      GLException
+  {
+    for (final WordAtlas a : this.atlases) {
+      a.delete(gli);
+    }
   }
 
   @Override public void textCacheLine(

@@ -97,6 +97,14 @@ public final class TextRendererTrivial implements TextRenderer
         new ArrayBufferAttribute("uv", GLScalarType.TYPE_FLOAT, 2) });
   }
 
+  @Override public void delete(
+    final @Nonnull GLInterface gli)
+    throws ConstraintError,
+      GLException
+  {
+    // Unused.
+  }
+
   @Override public void textCacheLine(
     final String line)
     throws GLException,
@@ -282,5 +290,4 @@ public final class TextRendererTrivial implements TextRenderer
     return this.font_metrics.stringWidth(line)
       + TextRendererTrivial.PAD_PACK_BORDER;
   }
-
 }
