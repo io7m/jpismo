@@ -62,7 +62,7 @@ final class ShowText implements Runnable
   private final Font                      font;
   private final Properties                log_properties;
   private final ArrayList<String>         lines;
-  private final ArrayList<CompiledText>   compiled_pages;
+  private final CompiledText              compiled_text;
 
   public ShowText(
     final String file_name)
@@ -95,7 +95,7 @@ final class ShowText implements Runnable
      */
 
     this.lines = Show.readLines(file_name);
-    this.compiled_pages = this.renderer.textCompile(this.lines);
+    this.compiled_text = this.renderer.textCompile(this.lines);
     this.renderer.textCacheUpload();
   }
 
@@ -103,7 +103,7 @@ final class ShowText implements Runnable
     throws GLException,
       ConstraintError
   {
-    Show.render(this.gl, this.compiled_pages);
+    Show.render(this.gl, this.compiled_text);
   }
 
   @Override public void run()

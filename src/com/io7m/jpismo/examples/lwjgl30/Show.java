@@ -18,6 +18,7 @@ import com.io7m.jcanephora.IndexBuffer;
 import com.io7m.jcanephora.Primitives;
 import com.io7m.jcanephora.Texture2DRGBAStatic;
 import com.io7m.jcanephora.TextureUnit;
+import com.io7m.jpismo.CompiledPage;
 import com.io7m.jpismo.CompiledText;
 
 final class Show
@@ -45,7 +46,7 @@ final class Show
 
   static void render(
     final GLInterface gl,
-    final ArrayList<CompiledText> compiled_pages)
+    final CompiledText text)
     throws GLException,
       ConstraintError
   {
@@ -80,7 +81,7 @@ final class Show
       BlendFunction.BLEND_ONE_MINUS_SOURCE_ALPHA);
 
     /**
-     * Text renderers render text as a set of overlaid compiled pages. The
+     * Text renderers render text as a set of overlaid compiled "pages". The
      * actual contents of the pages are renderer-specific and the user doesn't
      * need to know how they are constructed.
      * 
@@ -92,7 +93,9 @@ final class Show
 
     final TextureUnit[] units = gl.getTextureUnits();
 
-    for (final CompiledText ctext : compiled_pages) {
+    final int max = text.maxPages();
+    for (int index = 0; index < max; ++index) {
+      final CompiledPage ctext = text.getPage(index);
       final Texture2DRGBAStatic texture = ctext.getTexture();
       final ArrayBuffer ab = ctext.getVertexBuffer();
       final ArrayBufferDescriptor d = ab.getDescriptor();

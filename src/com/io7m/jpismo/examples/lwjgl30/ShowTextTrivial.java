@@ -56,13 +56,13 @@ final class ShowTextTrivial implements Runnable
     }
   }
 
-  private final Log                     log;
-  private final GLInterface             gl;
-  private final TextRendererTrivial     renderer;
-  private final Font                    font;
-  private final Properties              log_properties;
-  private final ArrayList<String>       lines;
-  private final ArrayList<CompiledText> compiled_pages;
+  private final Log                 log;
+  private final GLInterface         gl;
+  private final TextRendererTrivial renderer;
+  private final Font                font;
+  private final Properties          log_properties;
+  private final ArrayList<String>   lines;
+  private final CompiledText        compiled_text;
 
   public ShowTextTrivial(
     final String file_name)
@@ -94,7 +94,7 @@ final class ShowTextTrivial implements Runnable
      */
 
     this.lines = Show.readLines(file_name);
-    this.compiled_pages = this.renderer.textCompile(this.lines);
+    this.compiled_text = this.renderer.textCompile(this.lines);
     this.renderer.textCacheUpload();
   }
 
@@ -102,7 +102,7 @@ final class ShowTextTrivial implements Runnable
     throws GLException,
       ConstraintError
   {
-    Show.render(this.gl, this.compiled_pages);
+    Show.render(this.gl, this.compiled_text);
   }
 
   @Override public void run()
