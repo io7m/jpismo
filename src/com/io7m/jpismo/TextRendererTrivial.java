@@ -215,15 +215,15 @@ public final class TextRendererTrivial implements TextRenderer
       final ArrayBufferCursorWritable2f cursor_uv =
         array_map.getCursor2f("uv");
 
-      cursor_po.put2f(0, -height);
       cursor_po.put2f(0, 0);
+      cursor_po.put2f(0, height);
+      cursor_po.put2f(width, height);
       cursor_po.put2f(width, 0);
-      cursor_po.put2f(width, -height);
 
-      cursor_uv.put2f(0, 1);
       cursor_uv.put2f(0, 0);
-      cursor_uv.put2f(1, 0);
+      cursor_uv.put2f(0, 1);
       cursor_uv.put2f(1, 1);
+      cursor_uv.put2f(1, 0);
 
       if (this.log.enabledByLevel(Level.LOG_DEBUG)) {
         final StringBuilder t0 = new StringBuilder();
