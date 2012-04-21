@@ -27,7 +27,7 @@ import com.io7m.jcanephora.GLResource;
  * </p>
  * <p>
  * It is then possible to render text using vertex buffer objects and textures
- * retrieved from the compiled data ({@link CompiledText}).
+ * retrieved from the compiled data ({@link CompiledPage}).
  * </p>
  * <p>
  * As is most probably obvious, the "cache" operations modify internal caches,
@@ -36,7 +36,7 @@ import com.io7m.jcanephora.GLResource;
  * keep these operations to a minimum.
  * </p>
  * 
- * @see CompiledText
+ * @see CompiledPage
  */
 
 public interface TextRenderer extends GLResource
@@ -76,6 +76,7 @@ public interface TextRenderer extends GLResource
   /**
    * Compile the given text into a set of textures and vertex buffer objects.
    * 
+   * @see CompiledPage
    * @see CompiledText
    * 
    * @param text
@@ -92,7 +93,7 @@ public interface TextRenderer extends GLResource
    *           Iff an error occurs whilst caching the input text.
    */
 
-  @Nonnull ArrayList<CompiledText> textCompile(
+  @Nonnull CompiledText textCompile(
     final @Nonnull ArrayList<String> text)
     throws GLException,
       ConstraintError,

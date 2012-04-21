@@ -464,17 +464,20 @@ public final class TextRendererAtlasFixed implements TextRenderer
     }
   }
 
-  @Override public ArrayList<CompiledText> textCompile(
+  @Override public CompiledText textCompile(
     final @Nonnull ArrayList<String> text)
     throws GLException,
       ConstraintError,
       TextCacheException
   {
-    final ArrayList<CompiledText> ctexts = new ArrayList<CompiledText>();
+    final CompiledText c = new CompiledText();
+    float max_width = 0.0f;
+    float max_height = 0.0f;
+
     final HashMap<CharAtlas, Integer> quad_counts =
       new HashMap<CharAtlas, Integer>();
-    final HashMap<CharAtlas, CompiledText> texts =
-      new HashMap<CharAtlas, CompiledText>();
+    final HashMap<CharAtlas, CompiledPage> texts =
+      new HashMap<CharAtlas, CompiledPage>();
 
     /*
      * For each line, determine the number of quads required for characters
@@ -483,6 +486,8 @@ public final class TextRendererAtlasFixed implements TextRenderer
 
     for (final String line : text) {
       final int max = line.length();
+      max_width = Math.max(max_width, max * this.character_width);
+
       for (int index = 0; index < max; ++index) {
         final Pair<CharAtlas, Rectangle> pair =
           this.cacheCharacter(line.charAt(index));
@@ -505,7 +510,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
         this.gl.allocateIndexBuffer(array_buffer, index_count);
       texts.put(
         atlas,
-        new CompiledText(
+        new CompiledPage(
           array_buffer,
           index_buffer,
           atlas.getTexture(),
@@ -519,9 +524,9 @@ public final class TextRendererAtlasFixed implements TextRenderer
      * α.
      */
 
-    for (final Entry<CharAtlas, CompiledText> entry : texts.entrySet()) {
+    for (final Entry<CharAtlas, CompiledPage> entry : texts.entrySet()) {
       final CharAtlas wanted_atlas = entry.getKey();
-      final CompiledText comp = entry.getValue();
+      final CompiledPage comp = entry.getValue();
       int index = 0;
       int quad = 0;
       int quad_base = 0;
@@ -622,16 +627,19 @@ public final class TextRendererAtlasFixed implements TextRenderer
             x_offset += rect.getWidth();
           }
           y_offset += this.character_height;
+          max_height = Math.max(y_offset, max_height);
         }
       } finally {
         this.gl.unmapArrayBuffer(comp.getVertexBuffer());
         this.gl.unmapIndexBuffer(comp.getIndexBuffer());
       }
 
-      ctexts.add(comp);
+      c.addPage(comp);
     }
 
-    return ctexts;
+    c.setHeight(max_height);
+    c.setWidth(max_width);
+    return c;
   }
 
   @Override public int textGetLineHeight()

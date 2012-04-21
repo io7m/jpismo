@@ -506,19 +506,22 @@ public final class TextRendererAtlasVariable implements TextRenderer
     }
   }
 
-  @Override public @Nonnull ArrayList<CompiledText> textCompile(
+  @Override public @Nonnull CompiledText textCompile(
     final @Nonnull ArrayList<String> text)
     throws GLException,
       ConstraintError,
       TextCacheException
   {
-    final ArrayList<CompiledText> ctexts = new ArrayList<CompiledText>();
+    final CompiledText c = new CompiledText();
+    float max_width = 0.0f;
+    float max_height = 0.0f;
+
     final HashMap<WordAtlas, Integer> quad_counts =
       new HashMap<WordAtlas, Integer>();
     final HashMap<String, String[]> word_cache =
       new HashMap<String, String[]>();
-    final HashMap<WordAtlas, CompiledText> texts =
-      new HashMap<WordAtlas, CompiledText>();
+    final HashMap<WordAtlas, CompiledPage> texts =
+      new HashMap<WordAtlas, CompiledPage>();
 
     /*
      * For each line, determine the number of quads required for words using
@@ -550,7 +553,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
 
       texts.put(
         atlas,
-        new CompiledText(
+        new CompiledPage(
           array_buffer,
           index_buffer,
           atlas.getTexture(),
@@ -564,9 +567,9 @@ public final class TextRendererAtlasVariable implements TextRenderer
      * α.
      */
 
-    for (final Entry<WordAtlas, CompiledText> entry : texts.entrySet()) {
+    for (final Entry<WordAtlas, CompiledPage> entry : texts.entrySet()) {
       final WordAtlas wanted_atlas = entry.getKey();
-      final CompiledText comp = entry.getValue();
+      final CompiledPage comp = entry.getValue();
       int index = 0;
       int quad = 0;
       int quad_base = 0;
@@ -664,18 +667,22 @@ public final class TextRendererAtlasVariable implements TextRenderer
             }
 
             x_offset += rect.getWidth() + this.font_space_width;
+            max_width = Math.max(x_offset, max_width);
           }
           y_offset += this.font_metrics.getHeight();
+          max_height = Math.max(y_offset, max_height);
         }
       } finally {
         this.gl.unmapArrayBuffer(comp.getVertexBuffer());
         this.gl.unmapIndexBuffer(comp.getIndexBuffer());
       }
 
-      ctexts.add(comp);
+      c.addPage(comp);
     }
 
-    return ctexts;
+    c.setHeight(max_height);
+    c.setWidth(max_width);
+    return c;
   }
 
   @Override public int textGetLineHeight()

@@ -121,12 +121,13 @@ public final class TextRendererTrivial implements TextRenderer
     // Unused.
   }
 
-  @Override public ArrayList<CompiledText> textCompile(
+  @Override public CompiledText textCompile(
     final ArrayList<String> text)
     throws GLException,
       ConstraintError,
       TextCacheException
   {
+    final CompiledText c = new CompiledText();
     final String texture_name = "text" + this.id_pool.incrementAndGet();
     int width = 0;
     int height = 0;
@@ -271,9 +272,10 @@ public final class TextRendererTrivial implements TextRenderer
       this.gl.unmapIndexBuffer(index_buffer);
     }
 
-    final ArrayList<CompiledText> list = new ArrayList<CompiledText>();
-    list.add(new CompiledText(array_buffer, index_buffer, texture, true));
-    return list;
+    c.addPage(new CompiledPage(array_buffer, index_buffer, texture, true));
+    c.setWidth(width);
+    c.setHeight(height);
+    return c;
   }
 
   @Override public int textGetLineHeight()
