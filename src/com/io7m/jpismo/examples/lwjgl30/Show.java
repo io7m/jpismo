@@ -46,23 +46,24 @@ final class Show
   static void render(
     final GLInterface gl,
     final ArrayList<CompiledText> compiled_pages)
-
     throws GLException,
       ConstraintError
   {
     /**
      * Set up projection and modelview matrices. Note that the text renderer
-     * uses (0,0) as the top left corner of rendered text, so the modelview
-     * matrix is translated up the Y axis by 480 units.
+     * uses (0,0) as the top left corner of rendered text, so the projection
+     * matrix sets (0,0) as the top left corner. The text renderers also
+     * render at Z = 0, so the modelview matrix is translated along negative Z
+     * by one unit.
      */
 
     GL11.glMatrixMode(GL11.GL_PROJECTION);
     GL11.glLoadIdentity();
-    GL11.glOrtho(0, 640, 0, 480, 1, 100);
+    GL11.glOrtho(0, 640, 480, 0, 1, 100);
 
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
     GL11.glLoadIdentity();
-    GL11.glTranslated(0, 480, -1);
+    GL11.glTranslated(0, 0, -1);
 
     GL11.glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);

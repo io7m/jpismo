@@ -525,7 +525,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
       int index = 0;
       int quad = 0;
       int quad_base = 0;
-      float y_offset = -this.character_height;
+      float y_offset = 0.0f;
 
       try {
         final ArrayBufferWritableMap map_array =
@@ -601,10 +601,10 @@ public final class TextRendererAtlasFixed implements TextRenderer
               cursor_pos.put2f(x1, y0);
               cursor_pos.put2f(x1, y1);
 
-              cursor_uv.put2f(u0, v1);
               cursor_uv.put2f(u0, v0);
-              cursor_uv.put2f(u1, v1);
+              cursor_uv.put2f(u0, v1);
               cursor_uv.put2f(u1, v0);
+              cursor_uv.put2f(u1, v1);
 
               map_index.put(index + 0, quad_base + 1);
               map_index.put(index + 1, quad_base + 0);
@@ -621,7 +621,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
 
             x_offset += rect.getWidth();
           }
-          y_offset -= this.character_height;
+          y_offset += this.character_height;
         }
       } finally {
         this.gl.unmapArrayBuffer(comp.getVertexBuffer());
