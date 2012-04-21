@@ -231,7 +231,7 @@ public final class TextRendererTrivial implements TextRenderer
         t0.append("tri [");
         t0.append(0);
         t0.append(" ");
-        t0.append(-height);
+        t0.append(height);
         t0.append("] [");
         t0.append(0);
         t0.append(" ");
@@ -247,7 +247,7 @@ public final class TextRendererTrivial implements TextRenderer
         t1.append("tri [");
         t1.append(0);
         t1.append(" ");
-        t1.append(-height);
+        t1.append(height);
         t1.append("] [");
         t1.append(width);
         t1.append(" ");
@@ -255,7 +255,7 @@ public final class TextRendererTrivial implements TextRenderer
         t1.append("] [");
         t1.append(width);
         t1.append(" ");
-        t1.append(-height);
+        t1.append(height);
         t1.append("]");
         this.log.debug(t1.toString());
       }
