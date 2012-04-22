@@ -77,7 +77,7 @@ final class Show
     GL11.glEnable(GL11.GL_TEXTURE_2D);
 
     gl.enableBlending(
-      BlendFunction.BLEND_SOURCE_ALPHA,
+      BlendFunction.BLEND_ONE,
       BlendFunction.BLEND_ONE_MINUS_SOURCE_ALPHA);
 
     /**
