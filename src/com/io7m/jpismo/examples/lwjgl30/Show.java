@@ -76,7 +76,7 @@ final class Show
 
     GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-    gl.enableBlending(
+    gl.blendingEnable(
       BlendFunction.BLEND_ONE,
       BlendFunction.BLEND_ONE_MINUS_SOURCE_ALPHA);
 
@@ -91,7 +91,7 @@ final class Show
      * extra safety).
      */
 
-    final TextureUnit[] units = gl.getTextureUnits();
+    final TextureUnit[] units = gl.textureGetUnits();
 
     final int max = text.maxPages();
     for (int index = 0; index < max; ++index) {
@@ -101,8 +101,8 @@ final class Show
       final ArrayBufferDescriptor d = ab.getDescriptor();
       final IndexBuffer ib = ctext.getIndexBuffer();
 
-      gl.bindTexture2DRGBAStatic(units[0], texture);
-      gl.bindArrayBuffer(ab);
+      gl.texture2DRGBAStaticBind(units[0], texture);
+      gl.arrayBufferBind(ab);
 
       final int stride = d.getSize();
       final int uv_offset = d.getAttributeOffset("uv");

@@ -97,7 +97,7 @@ public final class TextRendererTrivial implements TextRenderer
         new ArrayBufferAttribute("uv", GLScalarType.TYPE_FLOAT, 2) });
   }
 
-  @Override public void delete(
+  @Override public void resourceDelete(
     final @Nonnull GLInterface gli)
     throws ConstraintError,
       GLException
@@ -144,12 +144,12 @@ public final class TextRendererTrivial implements TextRenderer
     Constraints.constrainRange(
       width,
       1,
-      this.gl.getMaximumTextureSize(),
+      this.gl.textureGetMaximumSize(),
       "Texture width is in range");
     Constraints.constrainRange(
       height,
       1,
-      this.gl.getMaximumTextureSize(),
+      this.gl.textureGetMaximumSize(),
       "Texture height is in range");
 
     /*
@@ -174,7 +174,7 @@ public final class TextRendererTrivial implements TextRenderer
      */
 
     final Texture2DRGBAStatic texture =
-      this.gl.allocateTextureRGBAStatic(
+      this.gl.texture2DRGBAStaticAllocate(
         texture_name,
         width,
         height,
@@ -184,7 +184,7 @@ public final class TextRendererTrivial implements TextRenderer
         TextureFilter.TEXTURE_FILTER_NEAREST);
 
     final PixelUnpackBufferWritableMap map =
-      this.gl.mapPixelUnpackBufferWrite(texture.getBuffer());
+      this.gl.pixelUnpackBufferMapWrite(texture.getBuffer());
     try {
       final ByteBuffer target_buffer = map.getByteBuffer();
       final DataBufferByte source_buffer =
@@ -192,24 +192,24 @@ public final class TextRendererTrivial implements TextRenderer
       target_buffer.put(source_buffer.getData());
       target_buffer.rewind();
     } finally {
-      this.gl.unmapPixelUnpackBuffer(texture.getBuffer());
+      this.gl.pixelUnpackBufferUnmap(texture.getBuffer());
     }
-    this.gl.replaceTexture2DRGBAStatic(texture);
+    this.gl.texture2DRGBAStaticReplace(texture);
 
     /*
      * Populate array and index buffers.
      */
 
     final ArrayBuffer array_buffer =
-      this.gl.allocateArrayBuffer(4, this.descriptor);
+      this.gl.arrayBufferAllocate(4, this.descriptor);
     final IndexBuffer index_buffer =
-      this.gl.allocateIndexBuffer(array_buffer, 6);
+      this.gl.indexBufferAllocate(array_buffer, 6);
 
     try {
       final ArrayBufferWritableMap array_map =
-        this.gl.mapArrayBufferWrite(array_buffer);
+        this.gl.arrayBufferMapWrite(array_buffer);
       final IndexBufferWritableMap index_map =
-        this.gl.mapIndexBufferWrite(index_buffer);
+        this.gl.indexBufferMapWrite(index_buffer);
 
       final ArrayBufferCursorWritable2f cursor_po =
         array_map.getCursor2f("position");
@@ -268,8 +268,8 @@ public final class TextRendererTrivial implements TextRenderer
       index_map.put(4, 2);
       index_map.put(5, 3);
     } finally {
-      this.gl.unmapArrayBuffer(array_buffer);
-      this.gl.unmapIndexBuffer(index_buffer);
+      this.gl.arrayBufferUnmap(array_buffer);
+      this.gl.indexBufferUnmap(index_buffer);
     }
 
     c.addPage(new CompiledPage(array_buffer, index_buffer, texture, true));

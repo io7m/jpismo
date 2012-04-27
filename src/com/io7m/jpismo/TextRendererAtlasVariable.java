@@ -84,7 +84,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
       this.id = TextRendererAtlasVariable.this.atlases.size();
 
       this.texture =
-        TextRendererAtlasVariable.this.gl.allocateTextureRGBAStatic(
+        TextRendererAtlasVariable.this.gl.texture2DRGBAStaticAllocate(
           "word_atlas" + this.id,
           TextRendererAtlasVariable.this.texture_size,
           TextRendererAtlasVariable.this.texture_size,
@@ -203,14 +203,6 @@ public final class TextRendererAtlasVariable implements TextRenderer
       throw new AssertionError("unreachable code!");
     }
 
-    @Override public void delete(
-      final @Nonnull GLInterface gli)
-      throws ConstraintError,
-        GLException
-    {
-      this.texture.delete(gli);
-    }
-
     @Override public boolean equals(
       final Object obj)
     {
@@ -257,6 +249,14 @@ public final class TextRendererAtlasVariable implements TextRenderer
       return this.dirty;
     }
 
+    @Override public void resourceDelete(
+      final @Nonnull GLInterface gli)
+      throws ConstraintError,
+        GLException
+    {
+      this.texture.resourceDelete(gli);
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -272,7 +272,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
     {
       final PixelUnpackBufferWritableMap map =
         TextRendererAtlasVariable.this.gl
-          .mapPixelUnpackBufferWrite(this.texture.getBuffer());
+          .pixelUnpackBufferMapWrite(this.texture.getBuffer());
 
       try {
         final ByteBuffer target_buffer = map.getByteBuffer();
@@ -281,12 +281,12 @@ public final class TextRendererAtlasVariable implements TextRenderer
         target_buffer.put(source_buffer.getData());
         target_buffer.rewind();
       } finally {
-        TextRendererAtlasVariable.this.gl.unmapPixelUnpackBuffer(this.texture
+        TextRendererAtlasVariable.this.gl.pixelUnpackBufferUnmap(this.texture
           .getBuffer());
       }
 
       TextRendererAtlasVariable.this.gl
-        .replaceTexture2DRGBAStatic(this.texture);
+        .texture2DRGBAStaticReplace(this.texture);
       this.dirty = false;
     }
 
@@ -472,17 +472,17 @@ public final class TextRendererAtlasVariable implements TextRenderer
   private int decideTextureSize()
     throws GLException
   {
-    final int size = this.gl.getMaximumTextureSize();
+    final int size = this.gl.textureGetMaximumSize();
     return Math.min(size, (int) Math.pow(2, 8));
   }
 
-  @Override public void delete(
+  @Override public void resourceDelete(
     final @Nonnull GLInterface gli)
     throws ConstraintError,
       GLException
   {
     for (final WordAtlas a : this.atlases) {
-      a.delete(gli);
+      a.resourceDelete(gli);
     }
   }
 
@@ -547,9 +547,9 @@ public final class TextRendererAtlasVariable implements TextRenderer
       final int vertx_count = quad_count.intValue() * 4;
       final int index_count = quad_count.intValue() * 6;
       final ArrayBuffer array_buffer =
-        this.gl.allocateArrayBuffer(vertx_count, this.descriptor);
+        this.gl.arrayBufferAllocate(vertx_count, this.descriptor);
       final IndexBuffer index_buffer =
-        this.gl.allocateIndexBuffer(array_buffer, index_count);
+        this.gl.indexBufferAllocate(array_buffer, index_count);
 
       texts.put(
         atlas,
@@ -577,9 +577,9 @@ public final class TextRendererAtlasVariable implements TextRenderer
 
       try {
         final ArrayBufferWritableMap map_array =
-          this.gl.mapArrayBufferWrite(comp.getVertexBuffer());
+          this.gl.arrayBufferMapWrite(comp.getVertexBuffer());
         final IndexBufferWritableMap map_index =
-          this.gl.mapIndexBufferWrite(comp.getIndexBuffer());
+          this.gl.indexBufferMapWrite(comp.getIndexBuffer());
         final ArrayBufferCursorWritable2f cursor_pos =
           map_array.getCursor2f("position");
         final ArrayBufferCursorWritable2f cursor_uv =
@@ -673,8 +673,8 @@ public final class TextRendererAtlasVariable implements TextRenderer
           max_height = Math.max(y_offset, max_height);
         }
       } finally {
-        this.gl.unmapArrayBuffer(comp.getVertexBuffer());
-        this.gl.unmapIndexBuffer(comp.getIndexBuffer());
+        this.gl.arrayBufferUnmap(comp.getVertexBuffer());
+        this.gl.indexBufferUnmap(comp.getIndexBuffer());
       }
 
       c.addPage(comp);

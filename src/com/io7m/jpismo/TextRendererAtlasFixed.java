@@ -79,7 +79,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
     {
       this.atlas_log = log;
       this.texture =
-        TextRendererAtlasFixed.this.gl.allocateTextureRGBAStatic(
+        TextRendererAtlasFixed.this.gl.texture2DRGBAStaticAllocate(
           "char_atlas" + TextRendererAtlasFixed.this.atlases.size(),
           TextRendererAtlasFixed.this.texture_size,
           TextRendererAtlasFixed.this.texture_size,
@@ -195,14 +195,6 @@ public final class TextRendererAtlasFixed implements TextRenderer
       throw new AssertionError("unreachable code!");
     }
 
-    @Override public void delete(
-      final @Nonnull GLInterface gli)
-      throws ConstraintError,
-        GLException
-    {
-      this.texture.delete(gli);
-    }
-
     Texture2DRGBAStatic getTexture()
     {
       return this.texture;
@@ -211,6 +203,14 @@ public final class TextRendererAtlasFixed implements TextRenderer
     boolean isDirty()
     {
       return this.dirty;
+    }
+
+    @Override public void resourceDelete(
+      final @Nonnull GLInterface gli)
+      throws ConstraintError,
+        GLException
+    {
+      this.texture.resourceDelete(gli);
     }
 
     @Override public String toString()
@@ -227,7 +227,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
         ConstraintError
     {
       final PixelUnpackBufferWritableMap map =
-        TextRendererAtlasFixed.this.gl.mapPixelUnpackBufferWrite(this.texture
+        TextRendererAtlasFixed.this.gl.pixelUnpackBufferMapWrite(this.texture
           .getBuffer());
 
       try {
@@ -237,11 +237,11 @@ public final class TextRendererAtlasFixed implements TextRenderer
         target_buffer.put(source_buffer.getData());
         target_buffer.rewind();
       } finally {
-        TextRendererAtlasFixed.this.gl.unmapPixelUnpackBuffer(this.texture
+        TextRendererAtlasFixed.this.gl.pixelUnpackBufferUnmap(this.texture
           .getBuffer());
       }
 
-      TextRendererAtlasFixed.this.gl.replaceTexture2DRGBAStatic(this.texture);
+      TextRendererAtlasFixed.this.gl.texture2DRGBAStaticReplace(this.texture);
       this.dirty = false;
     }
 
@@ -430,17 +430,17 @@ public final class TextRendererAtlasFixed implements TextRenderer
   private int decideTextureSize()
     throws GLException
   {
-    final int size = this.gl.getMaximumTextureSize();
+    final int size = this.gl.textureGetMaximumSize();
     return Math.min(size, (int) Math.pow(2, 8));
   }
 
-  @Override public void delete(
+  @Override public void resourceDelete(
     final @Nonnull GLInterface gli)
     throws ConstraintError,
       GLException
   {
     for (final CharAtlas a : this.atlases) {
-      a.delete(gli);
+      a.resourceDelete(gli);
     }
   }
 
@@ -505,9 +505,9 @@ public final class TextRendererAtlasFixed implements TextRenderer
       final int vertx_count = quad_count.intValue() * 4;
       final int index_count = quad_count.intValue() * 6;
       final ArrayBuffer array_buffer =
-        this.gl.allocateArrayBuffer(vertx_count, this.descriptor);
+        this.gl.arrayBufferAllocate(vertx_count, this.descriptor);
       final IndexBuffer index_buffer =
-        this.gl.allocateIndexBuffer(array_buffer, index_count);
+        this.gl.indexBufferAllocate(array_buffer, index_count);
       texts.put(
         atlas,
         new CompiledPage(
@@ -534,9 +534,9 @@ public final class TextRendererAtlasFixed implements TextRenderer
 
       try {
         final ArrayBufferWritableMap map_array =
-          this.gl.mapArrayBufferWrite(comp.getVertexBuffer());
+          this.gl.arrayBufferMapWrite(comp.getVertexBuffer());
         final IndexBufferWritableMap map_index =
-          this.gl.mapIndexBufferWrite(comp.getIndexBuffer());
+          this.gl.indexBufferMapWrite(comp.getIndexBuffer());
         final ArrayBufferCursorWritable2f cursor_pos =
           map_array.getCursor2f("position");
         final ArrayBufferCursorWritable2f cursor_uv =
@@ -630,8 +630,8 @@ public final class TextRendererAtlasFixed implements TextRenderer
           max_height = Math.max(y_offset, max_height);
         }
       } finally {
-        this.gl.unmapArrayBuffer(comp.getVertexBuffer());
-        this.gl.unmapIndexBuffer(comp.getIndexBuffer());
+        this.gl.arrayBufferUnmap(comp.getVertexBuffer());
+        this.gl.indexBufferUnmap(comp.getIndexBuffer());
       }
 
       c.addPage(comp);

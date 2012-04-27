@@ -44,25 +44,6 @@ public final class CompiledPage implements GLResource
   }
 
   /**
-   * Delete the vertex and index buffers for this particular piece of compiled
-   * text (note that the texture may be shared between values of type
-   * {@link CompiledPage} and therefore may not be deleted by the user).
-   */
-
-  @Override public void delete(
-    final @Nonnull GLInterface gl)
-    throws ConstraintError,
-      GLException
-  {
-    gl.deleteArrayBuffer(this.getVertexBuffer());
-    gl.deleteIndexBuffer(this.getIndexBuffer());
-
-    if (this.texture_owned) {
-      gl.deleteTexture2DRGBAStatic(this.texture);
-    }
-  }
-
-  /**
    * Retrieve the index buffer containing the indices of the triangles stored
    * in the vertex buffer.
    * 
@@ -93,5 +74,24 @@ public final class CompiledPage implements GLResource
   public @Nonnull ArrayBuffer getVertexBuffer()
   {
     return this.vertex_buffer;
+  }
+
+  /**
+   * Delete the vertex and index buffers for this particular piece of compiled
+   * text (note that the texture may be shared between values of type
+   * {@link CompiledPage} and therefore may not be deleted by the user).
+   */
+
+  @Override public void resourceDelete(
+    final @Nonnull GLInterface gl)
+    throws ConstraintError,
+      GLException
+  {
+    gl.arrayBufferDelete(this.getVertexBuffer());
+    gl.indexBufferDelete(this.getIndexBuffer());
+
+    if (this.texture_owned) {
+      gl.texture2DRGBAStaticDelete(this.texture);
+    }
   }
 }
