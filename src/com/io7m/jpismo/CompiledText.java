@@ -33,16 +33,6 @@ public final class CompiledText implements GLResource
     this.pages.add(page);
   }
 
-  @Override public void delete(
-    final @Nonnull GLInterface gl)
-    throws ConstraintError,
-      GLException
-  {
-    for (final CompiledPage page : this.pages) {
-      page.delete(gl);
-    }
-  }
-
   public float getHeight()
   {
     return this.height;
@@ -62,6 +52,16 @@ public final class CompiledText implements GLResource
   public int maxPages()
   {
     return this.pages.size();
+  }
+
+  @Override public void resourceDelete(
+    final @Nonnull GLInterface gl)
+    throws ConstraintError,
+      GLException
+  {
+    for (final CompiledPage page : this.pages) {
+      page.resourceDelete(gl);
+    }
   }
 
   void setHeight(
