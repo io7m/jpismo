@@ -58,6 +58,7 @@ public final class TextRendererTrivial implements TextRenderer
   private final @Nonnull AtomicInteger         id_pool         =
                                                                  new AtomicInteger(
                                                                    0);
+  private boolean                              deleted;
 
   /**
    * Add PAD_PACK_BORDER to the width of the string returned by the java font
@@ -95,6 +96,8 @@ public final class TextRendererTrivial implements TextRenderer
       new ArrayBufferDescriptor(new ArrayBufferAttribute[] {
         new ArrayBufferAttribute("position", GLScalarType.TYPE_FLOAT, 2),
         new ArrayBufferAttribute("uv", GLScalarType.TYPE_FLOAT, 2) });
+
+    this.deleted = false;
   }
 
   @Override public void resourceDelete(
@@ -102,7 +105,12 @@ public final class TextRendererTrivial implements TextRenderer
     throws ConstraintError,
       GLException
   {
-    // Unused.
+    this.deleted = true;
+  }
+
+  @Override public boolean resourceIsDeleted()
+  {
+    return this.deleted;
   }
 
   @Override public void textCacheLine(

@@ -73,6 +73,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
     private final @Nonnull Log                        atlas_log;
     private final int                                 id;
     private boolean                                   dirty;
+    private final boolean                             atlas_deleted;
 
     @SuppressWarnings("synthetic-access") WordAtlas(
       final @Nonnull Log log)
@@ -80,6 +81,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
         ConstraintError
     {
       this.atlas_log = log;
+      this.atlas_deleted = false;
 
       this.id = TextRendererAtlasVariable.this.atlases.size();
 
@@ -257,6 +259,11 @@ public final class TextRendererAtlasVariable implements TextRenderer
       this.texture.resourceDelete(gli);
     }
 
+    @Override public boolean resourceIsDeleted()
+    {
+      return this.atlas_deleted;
+    }
+
     @Override public String toString()
     {
       final StringBuilder builder = new StringBuilder();
@@ -343,6 +350,7 @@ public final class TextRendererAtlasVariable implements TextRenderer
   private final int                            font_space_width;
   private final int                            texture_size;
   private final @Nonnull ArrayBufferDescriptor descriptor;
+  private boolean                              deleted;
 
   public TextRendererAtlasVariable(
     final @Nonnull GLInterface gl,
@@ -377,6 +385,8 @@ public final class TextRendererAtlasVariable implements TextRenderer
       new ArrayBufferDescriptor(new ArrayBufferAttribute[] {
         new ArrayBufferAttribute("position", GLScalarType.TYPE_FLOAT, 2),
         new ArrayBufferAttribute("uv", GLScalarType.TYPE_FLOAT, 2) });
+
+    this.deleted = false;
   }
 
   private void cacheLineInner(
@@ -484,6 +494,12 @@ public final class TextRendererAtlasVariable implements TextRenderer
     for (final WordAtlas a : this.atlases) {
       a.resourceDelete(gli);
     }
+    this.deleted = true;
+  }
+
+  @Override public boolean resourceIsDeleted()
+  {
+    return this.deleted;
   }
 
   @Override public void textCacheLine(

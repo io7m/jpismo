@@ -71,6 +71,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
     private final @Nonnull Graphics2D                    graphics;
     private final @Nonnull Log                           atlas_log;
     private boolean                                      dirty;
+    private boolean                                      atlas_deleted;
 
     @SuppressWarnings("synthetic-access") CharAtlas(
       final @Nonnull Log log)
@@ -78,6 +79,8 @@ public final class TextRendererAtlasFixed implements TextRenderer
         ConstraintError
     {
       this.atlas_log = log;
+      this.atlas_deleted = false;
+
       this.texture =
         TextRendererAtlasFixed.this.gl.texture2DRGBAStaticAllocate(
           "char_atlas" + TextRendererAtlasFixed.this.atlases.size(),
@@ -211,6 +214,12 @@ public final class TextRendererAtlasFixed implements TextRenderer
         GLException
     {
       this.texture.resourceDelete(gli);
+      this.atlas_deleted = true;
+    }
+
+    @Override public boolean resourceIsDeleted()
+    {
+      return this.atlas_deleted;
     }
 
     @Override public String toString()
@@ -293,6 +302,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
   private final int                            character_width;
 
   private final int                            character_height;
+  private boolean                              deleted;
 
   public TextRendererAtlasFixed(
     final @Nonnull GLInterface gl,
@@ -442,6 +452,12 @@ public final class TextRendererAtlasFixed implements TextRenderer
     for (final CharAtlas a : this.atlases) {
       a.resourceDelete(gli);
     }
+    this.deleted = true;
+  }
+
+  @Override public boolean resourceIsDeleted()
+  {
+    return this.deleted;
   }
 
   @Override public void textCacheLine(
