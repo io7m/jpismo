@@ -27,6 +27,7 @@ public final class CompiledPage implements GLResource
   private final @Nonnull IndexBuffer         index_buffer;
   private final @Nonnull Texture2DRGBAStatic texture;
   private final boolean                      texture_owned;
+  private boolean                            deleted;
 
   CompiledPage(
     final @Nonnull ArrayBuffer vertex_buffer,
@@ -41,6 +42,7 @@ public final class CompiledPage implements GLResource
       Constraints.constrainNotNull(index_buffer, "Index buffer");
     this.texture = Constraints.constrainNotNull(texture, "Texture");
     this.texture_owned = texture_owned;
+    this.deleted = false;
   }
 
   /**
@@ -93,5 +95,12 @@ public final class CompiledPage implements GLResource
     if (this.texture_owned) {
       gl.texture2DRGBAStaticDelete(this.texture);
     }
+
+    this.deleted = true;
+  }
+
+  @Override public boolean resourceIsDeleted()
+  {
+    return this.deleted;
   }
 }

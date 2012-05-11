@@ -21,10 +21,12 @@ public final class CompiledText implements GLResource
   final @Nonnull ArrayList<CompiledPage> pages;
   private float                          height = 0.0f;
   private float                          width  = 0.0f;
+  private boolean                        deleted;
 
   CompiledText()
   {
     this.pages = new ArrayList<CompiledPage>();
+    this.deleted = false;
   }
 
   void addPage(
@@ -62,6 +64,12 @@ public final class CompiledText implements GLResource
     for (final CompiledPage page : this.pages) {
       page.resourceDelete(gl);
     }
+    this.deleted = true;
+  }
+
+  @Override public boolean resourceIsDeleted()
+  {
+    return this.deleted;
   }
 
   void setHeight(
