@@ -18,7 +18,7 @@ import com.io7m.jcanephora.Texture2DRGBAStatic;
  * as output (returned in a {@link CompiledText} value).
  * </p>
  * 
- * @see {@link CompiledText}
+ * @see CompiledText
  */
 
 public final class CompiledPage implements GLResource
