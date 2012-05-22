@@ -54,10 +54,7 @@ public final class TextRendererTrivial implements TextRenderer
   private final @Nonnull Graphics2D            base_graphics;
   private final @Nonnull FontMetrics           font_metrics;
   private final @Nonnull ArrayBufferDescriptor descriptor;
-
-  private final @Nonnull AtomicInteger         id_pool         =
-                                                                 new AtomicInteger(
-                                                                   0);
+  private final @Nonnull AtomicInteger         id_pool;
   private boolean                              deleted;
 
   /**
@@ -78,6 +75,7 @@ public final class TextRendererTrivial implements TextRenderer
     this.font = Constraints.constrainNotNull(font, "Font");
     this.log =
       new Log(Constraints.constrainNotNull(log, "Log interface"), "vtext");
+    this.id_pool = new AtomicInteger(0);
 
     /*
      * Initialize the bare minimum Java2D graphics context needed to measure
@@ -284,6 +282,17 @@ public final class TextRendererTrivial implements TextRenderer
     c.setWidth(width);
     c.setHeight(height);
     return c;
+  }
+
+  @Override public CompiledText textCompileLine(
+    final @Nonnull String line)
+    throws GLException,
+      ConstraintError,
+      TextCacheException
+  {
+    final ArrayList<String> lines = new ArrayList<String>();
+    lines.add(line);
+    return this.textCompile(lines);
   }
 
   @Override public int textGetLineHeight()

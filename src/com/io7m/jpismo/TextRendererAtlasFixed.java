@@ -658,6 +658,17 @@ public final class TextRendererAtlasFixed implements TextRenderer
     return c;
   }
 
+  @Override public CompiledText textCompileLine(
+    final @Nonnull String line)
+    throws GLException,
+      ConstraintError,
+      TextCacheException
+  {
+    final ArrayList<String> lines = new ArrayList<String>();
+    lines.add(line);
+    return this.textCompile(lines);
+  }
+
   @Override public int textGetLineHeight()
   {
     return this.font_metrics.getHeight();
