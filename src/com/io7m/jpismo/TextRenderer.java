@@ -100,6 +100,31 @@ public interface TextRenderer extends GLResource
       TextCacheException;
 
   /**
+   * Compile the given line into a set of textures and vertex buffer objects.
+   * 
+   * @see CompiledPage
+   * @see CompiledText
+   * 
+   * @param line
+   *          A line of text.
+   * @throws GLException
+   *           Iff an OpenGL error occurs.
+   * @throws ConstraintError
+   *           Iff any of the following conditions hold:
+   *           <ul>
+   *           <li><code>line == null</code></li>
+   *           </ul>
+   * @throws TextCacheException
+   *           Iff an error occurs whilst caching the input text.
+   */
+
+  @Nonnull CompiledText textCompileLine(
+    final @Nonnull String line)
+    throws GLException,
+      ConstraintError,
+      TextCacheException;
+
+  /**
    * Return the maximum height in pixels of text rendered with the current
    * renderer.
    */
