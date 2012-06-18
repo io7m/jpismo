@@ -135,8 +135,8 @@ public final class TextRendererTrivial implements TextRenderer
   {
     final CompiledText c = new CompiledText();
     final String texture_name = "text" + this.id_pool.incrementAndGet();
-    int width = 0;
-    int height = 0;
+    int width = 2;
+    int height = 2;
 
     /*
      * Determine how much space is required for the texture.
