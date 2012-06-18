@@ -529,8 +529,8 @@ public final class TextRendererAtlasVariable implements TextRenderer
       TextCacheException
   {
     final CompiledText c = new CompiledText();
-    float max_width = 0.0f;
-    float max_height = 0.0f;
+    float max_width = 2.0f;
+    float max_height = 2.0f;
 
     final HashMap<WordAtlas, Integer> quad_counts =
       new HashMap<WordAtlas, Integer>();
