@@ -4,6 +4,10 @@ import javax.annotation.Nonnull;
 
 import com.io7m.jrpack.PackResult.PackResultCode;
 
+/**
+ * Exception raised whilst attempting to cache text.
+ */
+
 public final class TextCacheException extends Throwable
 {
   private static final long             serialVersionUID =
