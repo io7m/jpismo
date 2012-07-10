@@ -35,9 +35,9 @@ saxon \
   -s:../doc/documentation.xml ||
   fatal "could not generate documentation"
 
-cp ../ext/structural-1.0.0/*.css . || fatal "could not copy CSS"
-cp ../doc/*.css .                  || fatal "could not copy CSS"
-cp -r ../target/apidocs/ javadoc   || fatal "coult not insert javadoc"
+cp ../ext/structural-1.0.0/*.css .    || fatal "could not copy CSS"
+cp ../doc/*.css .                     || fatal "could not copy CSS"
+cp -r ../target/site/apidocs/ javadoc || fatal "coult not insert javadoc"
 
 cd "${CURRENT_DIR}" ||
   fatal "could not restore directory"
