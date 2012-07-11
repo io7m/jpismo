@@ -10,6 +10,7 @@
 .constant,
 .element,
 .file,
+.function,
 .type
 {
   font-family: monospace;
@@ -33,14 +34,28 @@
   font-size:     9pt;
 }
 
-.platforms table td
-{
-  padding-right: 2.0em;
-}
+.platforms table td { padding-right: 1em; }
+
+.platforms table td:nth-child(1)  { min-width: 8em; }
+.platforms table td:nth-child(2)  { min-width: 8em; }
+.platforms table td:nth-child(3)  { min-width: 8em; }
+.platforms table td:nth-child(4)  { min-width: 16em; }
+.platforms table td:nth-child(5)  { min-width: 8em; }
+.platforms table td:nth-child(6)  { min-width: 16em; }
+.platforms table td:nth-child(7)  { min-width: 16em; }
+.platforms table td:nth-child(8)  { min-width: 8em; }
+.platforms table td:nth-child(9)  { min-width: 16em; }
+.platforms table td:nth-child(10) { min-width: 24em; }
+.platforms table td:nth-child(11) { min-width: 16em; }
+
 .platforms table tbody,
 .platforms table thead
 {
-  font-size:     8pt;
-  font-family:   monospace;
+  font-size:   8pt;
+  font-family: monospace;
 }
 
+.subject
+{
+  font-style: italic;
+}
