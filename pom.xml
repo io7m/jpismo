@@ -45,6 +45,7 @@
   <modules>
     <module>io7m-jpismo-core</module>
     <module>io7m-jpismo-lwjgl</module>
+    <module>io7m-jpismo-jogl</module>
   </modules>
 
   <build>

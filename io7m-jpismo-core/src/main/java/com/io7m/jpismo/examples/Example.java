@@ -24,6 +24,8 @@ public interface Example
 
   public @Nonnull CompiledText getCompiledText();
 
+  public @Nonnull String getName();
+
   public void close(
     final @Nonnull Log log,
     final @Nonnull GLInterface gl)
