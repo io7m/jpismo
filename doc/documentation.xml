@@ -37,6 +37,23 @@
           textures as output for rendering.
         </s:paragraph>
       </s:subsection>
+      <s:subsection>
+        <s:subsection-title>Portability</s:subsection-title>
+        <s:paragraph>
+          The <s:term type="package">jpismo</s:term>
+          package uses <s:link-external target="http://io7m.com/software/jcanephora">jcanephora</s:link-external>
+          for all OpenGL operations, internally. This keeps the package isolated
+          from the chosen OpenGL implementation (<s:link-external target="http://jogamp.org">JOGL</s:link-external>,
+          <s:link-external target="http://lwjgl.org">LWJGL</s:link-external>), meaning
+          the programmer is free to choose which one he/she wants to use.
+        </s:paragraph>
+        <s:paragraph>
+          As a result, the package does not use the deprecated
+          OpenGL fixed-function pipeline and also does not use
+          any feature of the programmable pipeline outside of
+          OpenGL 2.1.
+        </s:paragraph>
+      </s:subsection>
     </s:section>
     <s:section>
       <s:section-title>Installation</s:section-title>
@@ -62,15 +79,29 @@
               <s:table-column-name>OS</s:table-column-name>
               <s:table-column-name>OS-Version</s:table-column-name>
               <s:table-column-name>OS-Arch</s:table-column-name>
-              <s:table-column-name>JDK-Vendor</s:table-column-name>
-              <s:table-column-name>JDK-Version</s:table-column-name>
-              <s:table-column-name>VM</s:table-column-name>
-              <s:table-column-name>VM-Version</s:table-column-name>
+              <s:table-column-name>JRE-Vendor</s:table-column-name>
+              <s:table-column-name>JRE-Version</s:table-column-name>
+              <s:table-column-name>JVM</s:table-column-name>
+              <s:table-column-name>JVM-Vendor</s:table-column-name>
+              <s:table-column-name>JVM-Version</s:table-column-name>
+              <s:table-column-name>GL-Vendor</s:table-column-name>
+              <s:table-column-name>GL-Renderer</s:table-column-name>
+              <s:table-column-name>GL-Version</s:table-column-name>
             </s:table-head>
             <s:table-body>
-              <s:table-row>
-                <s:table-cell></s:table-cell>
-              </s:table-row>
+<s:table-row>
+  <s:table-cell>Linux</s:table-cell>
+  <s:table-cell>3.4.4-2-ARCH</s:table-cell>
+  <s:table-cell>amd64</s:table-cell>
+  <s:table-cell>Sun Microsystems Inc.</s:table-cell>
+  <s:table-cell>1.6.0_24</s:table-cell>
+  <s:table-cell>OpenJDK 64-Bit Server VM</s:table-cell>
+  <s:table-cell>Sun Microsystems Inc.</s:table-cell>
+  <s:table-cell>20.0-b12</s:table-cell>
+  <s:table-cell>Tungsten Graphics, Inc</s:table-cell>
+  <s:table-cell>Mesa DRI Intel(R) Sandybridge Mobile </s:table-cell>
+  <s:table-cell>3.0 Mesa 8.0.3</s:table-cell>
+</s:table-row>
             </s:table-body>
           </s:table>
         </s:formal-item>
@@ -111,8 +142,174 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.]]>
       <s:section-title>Tutorial</s:section-title>
       <s:paragraph>
         The <s:term type="package">jpismo</s:term> package renders text
-        in a form that can be used in OpenGL programs.
+        in a form that can be used in OpenGL programs. Each renderer provided
+        by the package takes an array of strings as input and
+        produces a value of type <s:term type="type">CompiledText</s:term>
+        as output. A value of type <s:term type="type">CompiledText</s:term>
+        contains one or more textures, one or more vertex buffers, and one or
+        more index buffers. The steps to render a value of type
+        <s:term type="type">CompiledText</s:term> are the same regardless of
+        which renderer produced them.
       </s:paragraph>
+      <s:paragraph>
+        The package uses <s:link-external target="http://io7m.com/software/jcanephora/">jcanephora</s:link-external>
+        to abstract over the two main OpenGL implementations available for Java -
+        <s:link-external target="http://jogamp.org">JOGL</s:link-external> and
+        <s:link-external target="http://lwjgl.org">LWJGL</s:link-external>. Assuming
+        that a <s:term type="type">GLInterface</s:term> renderer has been instantiated
+        (see the <s:term type="package">jcanephora</s:term> documentation for details),
+        the steps required to compile text into renderable form are:
+      </s:paragraph>
+      <s:formal-item kind="example">
+        <s:formal-item-title>Compilation</s:formal-item-title>
+        <s:verbatim>import java.awt.Font;
+import com.io7m.jlog.Log;
+import com.io7m.jcanephora.GLInterface;
+import com.io7m.jpismo.CompiledText;
+import com.io7m.jpismo.TextCacheException;
+import com.io7m.jpismo.TextRendererTrivial;
+
+
+GLInterface g;
+Log log;
+ArrayList&lt;String&gt; lines;
+
+Font font = new Font("Serif", Font.PLAIN, 12);
+TextRenderer r = new TextRendererTrivial(g, font, log);
+
+CompiledText ct = r.textCompile(lines);
+r.textCacheUpload();</s:verbatim>
+      </s:formal-item>
+      <s:paragraph>
+        The text renderers work with standard Java AWT fonts. Note that
+        <s:term type="function">textCacheUpload()</s:term> must be called
+        after compilation has finished. For most renderers,
+        <s:term type="function">textCacheUpload()</s:term> will send all
+        cached bitmap data to the OpenGL implementation. This function exists
+        to allow the programmer to compile any number of separate pieces of
+        text ahead of time and then upload all bitmap data in one operation
+        afterwards.
+      </s:paragraph>
+      <s:paragraph>
+        As mentioned previously, compiled text consists of vertex buffer
+        objects, textures, and index buffer objects. The buffers and
+        textures inside <s:term type="type">CompiledText</s:term> values
+        are carefully arranged to minimize the number of OpenGL
+        state changes required when rendering. A concrete example of this
+        is the renderers that use texture atlases to hold individual words: The
+        naive approach to rendering would be to step through the text a word
+        at a time, switching to the correct texture for each word.
+        Unfortunately, this could result in as many texture state changes
+        as there are words, in the worst case. A better approach would be to
+        move through the <s:term type="subject">textures</s:term>, one at a
+        time, rendering all words that use the current texture. The
+        <s:term type="package">jpismo</s:term> package captures this idea
+        by having <s:term type="type">CompiledText</s:term> values contain
+        a list of <s:term type="type">CompiledPage</s:term> values. A
+        <s:term type="type">CompiledPage</s:term> is a texture and a
+        vertex buffer object containing all of the words that use the
+        texture.
+      </s:paragraph>
+      <s:paragraph>
+        As stated, the steps required to render a
+        <s:term type="type">CompiledText</s:term> value are the same
+        regardless of the renderer that produced it. The renderers
+        produce vertex buffer objects that assume a coordinate system
+        where <s:term type="constant">(0, 0)</s:term> is the top left
+        corner and where OpenGL units are mapped to pixels. The text
+        renderers also set the Z component of each vertex to 0. Text is
+        rendered into transparent textures, with pure white characters.
+        The programmer is expected to modify the color of text with
+        fragment shaders, and do any required tranformation and
+        scaling with vertex shaders.
+      </s:paragraph>
+      <s:paragraph>
+        The following code uses <s:term type="package">JOGL</s:term> and
+        <s:term type="package">jcanephora</s:term> for rendering.
+      </s:paragraph>
+      <s:formal-item kind="example">
+        <s:formal-item-title>JOGL/jcanephora rendering</s:formal-item-title>
+        <s:verbatim>
+  private static void render(
+    final GLContext context,
+    final GLInterface gl,
+    final CompiledText text)
+    throws GLException,
+      ConstraintError
+  {
+    context.makeCurrent();
+
+    final GL g = context.getGL();
+    final GL2 g2 = g.getGL2();
+
+    /**
+     * Set up projection and modelview matrices. Note that the text renderer
+     * uses (0,0) as the top left corner of rendered text, so the projection
+     * matrix sets (0,0) as the top left corner. The text renderers also
+     * render at Z = 0, so the modelview matrix is translated along negative Z
+     * by one unit.
+     */
+
+    g2.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+    g2.glLoadIdentity();
+    g2.glOrtho(0, 640, 480, 0, 1, 100);
+
+    g2.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+    g2.glLoadIdentity();
+    g2.glTranslated(0, 0, -1);
+
+    g2.glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+    g2.glClear(GL.GL_COLOR_BUFFER_BIT);
+
+    /**
+     * Enable texturing and blending. Text is rendered as white text on a
+     * transparent background.
+     */
+
+    g2.glEnable(GL.GL_TEXTURE_2D);
+
+    gl.blendingEnable(
+      BlendFunction.BLEND_ONE,
+      BlendFunction.BLEND_ONE_MINUS_SOURCE_ALPHA);
+
+    /**
+     * Text renderers render text as a set of overlaid compiled "pages". The
+     * actual contents of the pages are renderer-specific and the user doesn't
+     * need to know how they are constructed.
+     * 
+     * Each page holds a vertex buffer object, an index buffer, and a texture.
+     * Rendering therefore consists of binding the vertex buffer object and
+     * texture, and then calling glDrawElements() (jcanephora is used here for
+     * extra safety).
+     */
+
+    final TextureUnit[] units = gl.textureGetUnits();
+
+    final int max = text.maxPages();
+    for (int index = 0; index &lt; max; ++index) {
+      final CompiledPage ctext = text.getPage(index);
+      final Texture2DRGBAStatic texture = ctext.getTexture();
+      final ArrayBuffer ab = ctext.getVertexBuffer();
+      final ArrayBufferDescriptor d = ab.getDescriptor();
+      final IndexBuffer ib = ctext.getIndexBuffer();
+
+      gl.texture2DRGBAStaticBind(units[0], texture);
+      gl.arrayBufferBind(ab);
+
+      final int stride = d.getSize();
+      final int uv_offset = d.getAttributeOffset("uv");
+      final int po_offset = d.getAttributeOffset("position");
+
+      g2.glEnableClientState(GLPointerFunc.GL_VERTEX_ARRAY);
+      g2.glVertexPointer(2, GL.GL_FLOAT, stride, po_offset);
+      g2.glEnableClientState(GLPointerFunc.GL_TEXTURE_COORD_ARRAY);
+      g2.glTexCoordPointer(2, GL.GL_FLOAT, stride, uv_offset);
+
+      gl.drawElements(Primitives.PRIMITIVE_TRIANGLES, ib);
+    }
+  }
+        </s:verbatim>
+      </s:formal-item>
     </s:section>
   </s:part>
 
