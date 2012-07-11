@@ -55,6 +55,7 @@
         </s:paragraph>
       </s:subsection>
     </s:section>
+    
     <s:section>
       <s:section-title>Installation</s:section-title>
       <s:paragraph>
@@ -65,30 +66,31 @@
         <s:verbatim type="example"><![CDATA[$ mvn -C clean package javadoc:aggregate install]]></s:verbatim>     
       </s:paragraph>
     </s:section>
+
     <s:section>
       <s:section-title>Supported Systems</s:section-title>
       <s:paragraph>
         This release of the software passed 100% of the included unit tests on
         the following platforms:
       </s:paragraph>
-        <s:formal-item kind="platform_table" type="platforms">
-          <s:formal-item-title>Supported systems</s:formal-item-title>
-          <s:table>
-            <s:table-summary>Supported systems</s:table-summary>
-            <s:table-head>
-              <s:table-column-name>OS</s:table-column-name>
-              <s:table-column-name>OS-Version</s:table-column-name>
-              <s:table-column-name>OS-Arch</s:table-column-name>
-              <s:table-column-name>JRE-Vendor</s:table-column-name>
-              <s:table-column-name>JRE-Version</s:table-column-name>
-              <s:table-column-name>JVM</s:table-column-name>
-              <s:table-column-name>JVM-Vendor</s:table-column-name>
-              <s:table-column-name>JVM-Version</s:table-column-name>
-              <s:table-column-name>GL-Vendor</s:table-column-name>
-              <s:table-column-name>GL-Renderer</s:table-column-name>
-              <s:table-column-name>GL-Version</s:table-column-name>
-            </s:table-head>
-            <s:table-body>
+      <s:formal-item kind="platform_table" type="platforms">
+        <s:formal-item-title>Supported systems</s:formal-item-title>
+        <s:table>
+          <s:table-summary>Supported systems</s:table-summary>
+          <s:table-head>
+            <s:table-column-name>OS</s:table-column-name>
+            <s:table-column-name>OS-Version</s:table-column-name>
+            <s:table-column-name>OS-Arch</s:table-column-name>
+            <s:table-column-name>JRE-Vendor</s:table-column-name>
+            <s:table-column-name>JRE-Version</s:table-column-name>
+            <s:table-column-name>JVM</s:table-column-name>
+            <s:table-column-name>JVM-Vendor</s:table-column-name>
+            <s:table-column-name>JVM-Version</s:table-column-name>
+            <s:table-column-name>GL-Vendor</s:table-column-name>
+            <s:table-column-name>GL-Renderer</s:table-column-name>
+            <s:table-column-name>GL-Version</s:table-column-name>
+          </s:table-head>
+          <s:table-body>
 <s:table-row>
   <s:table-cell>Linux</s:table-cell>
   <s:table-cell>3.4.4-2-ARCH</s:table-cell>
@@ -102,10 +104,11 @@
   <s:table-cell>Mesa DRI Intel(R) Sandybridge Mobile </s:table-cell>
   <s:table-cell>3.0 Mesa 8.0.3</s:table-cell>
 </s:table-row>
-            </s:table-body>
-          </s:table>
-        </s:formal-item>
+          </s:table-body>
+        </s:table>
+      </s:formal-item>
     </s:section>
+
     <s:section>
       <s:section-title>Platform Specific Issues</s:section-title>
       <s:paragraph>
