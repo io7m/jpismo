@@ -60,4 +60,9 @@ public final class ShowTextTrivial implements Example
     this.compiled_text = this.renderer.textCompile(this.lines);
     this.renderer.textCacheUpload();
   }
+
+  @Override public String getName()
+  {
+    return "ShowTextTrivial";
+  }
 }
