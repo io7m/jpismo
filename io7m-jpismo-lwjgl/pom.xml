@@ -4,12 +4,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.io7m.jpismo.jogl</groupId>
-  <artifactId>io7m-jpismo-jogl</artifactId>
-  <name>io7m-jpismo-jogl</name>
-  <description>API implementation using the JOGL implementation of jcanephora</description>
+  <groupId>com.io7m.jpismo.lwjgl</groupId>
+  <artifactId>io7m-jpismo-lwjgl</artifactId>
+  <name>io7m-jpismo-lwjgl</name>
+  <description>API implementation using the LWJGL implementation of jcanephora</description>
   <version>1.0.0</version>
-  <url>http://mvn.io7m.com/jpismo-jogl</url>
+  <url>http://mvn.io7m.com/jpismo-lwjgl</url>
   <packaging>jar</packaging>
 
   <licenses>
@@ -34,7 +34,7 @@
     <site>
       <id>io7m</id>
       <name>io7m.com</name>
-      <url>http://mvn.io7m.com/jpismo-jogl</url>
+      <url>http://mvn.io7m.com/jpismo-lwjgl</url>
     </site>
   </distributionManagement>
 
@@ -64,8 +64,8 @@
       <version>1.0.0</version>
     </dependency>
     <dependency>
-      <groupId>com.io7m.jcanephora.jogl</groupId>
-      <artifactId>io7m-jcanephora-jogl</artifactId>
+      <groupId>com.io7m.jcanephora.lwjgl</groupId>
+      <artifactId>io7m-jcanephora-lwjgl</artifactId>
       <version>1.0.0</version>
     </dependency>
     <dependency>
@@ -84,6 +84,11 @@
       <version>2.1.1</version>
     </dependency>
     <dependency>
+      <groupId>org.lwjgl.lwjgl</groupId>
+      <artifactId>lwjgl</artifactId>
+      <version>2.8.4</version>
+    </dependency>
+    <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
       <version>2.0.0</version>
@@ -96,6 +101,21 @@
     </dependency>
   </dependencies>
 
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.maven.plugin</groupId>
+        <artifactId>emma-maven-plugin</artifactId>
+        <version>1.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
   <build>
     <plugins>
       <!-- Require JDK >= 1.6 -->
@@ -106,6 +126,34 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <!-- Use mavennatives plugin to unpack native jar files -->
+      <plugin>
+        <groupId>com.googlecode.mavennatives</groupId>
+        <artifactId>maven-nativedependencies-plugin</artifactId>
+        <version>0.0.6</version>
+        <executions>
+          <execution>
+            <id>unpacknatives</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Tell the surefire plugin where to find native binaries -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.10</version>
+        <configuration>
+          <forkMode>once</forkMode>
+          <argLine>-Djava.library.path=${project.build.directory}/natives</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
       </plugin>
 
@@ -161,6 +209,38 @@
         </executions>
       </plugin>
     </plugins>
+
+    <!-- Mark certain plugins as ignored in Eclipse. Does not affect the build. -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.googlecode.mavennatives</groupId>
+                    <artifactId>
+                      maven-nativedependencies-plugin
+                    </artifactId>
+                    <versionRange>[0.0.6,)</versionRange>
+                    <goals>
+                      <goal>copy</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <!-- Sign artifacts when deploying to io7m -->

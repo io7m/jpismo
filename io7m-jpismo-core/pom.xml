@@ -4,12 +4,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.io7m.jpismo.jogl</groupId>
-  <artifactId>io7m-jpismo-jogl</artifactId>
-  <name>io7m-jpismo-jogl</name>
-  <description>API implementation using the JOGL implementation of jcanephora</description>
+  <groupId>com.io7m.jpismo.core</groupId>
+  <artifactId>io7m-jpismo-core</artifactId>
+  <name>io7m-jpismo-core</name>
+  <description>Common API code</description>
   <version>1.0.0</version>
-  <url>http://mvn.io7m.com/jpismo-jogl</url>
+  <url>http://mvn.io7m.com/jpismo-core</url>
   <packaging>jar</packaging>
 
   <licenses>
@@ -34,7 +34,7 @@
     <site>
       <id>io7m</id>
       <name>io7m.com</name>
-      <url>http://mvn.io7m.com/jpismo-jogl</url>
+      <url>http://mvn.io7m.com/jpismo-core</url>
     </site>
   </distributionManagement>
 
@@ -54,23 +54,18 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.io7m.jpismo.core</groupId>
-      <artifactId>io7m-jpismo-core</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.io7m.jcanephora.core</groupId>
       <artifactId>io7m-jcanephora-core</artifactId>
       <version>1.0.0</version>
     </dependency>
     <dependency>
-      <groupId>com.io7m.jcanephora.jogl</groupId>
-      <artifactId>io7m-jcanephora-jogl</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.io7m.jtensors</groupId>
       <artifactId>io7m-jtensors</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jrpack</groupId>
+      <artifactId>io7m-jrpack</artifactId>
       <version>2.1.0</version>
     </dependency>
     <dependency>
@@ -95,6 +90,21 @@
       <version>4.10</version>
     </dependency>
   </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.maven.plugin</groupId>
+        <artifactId>emma-maven-plugin</artifactId>
+        <version>1.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <build>
     <plugins>

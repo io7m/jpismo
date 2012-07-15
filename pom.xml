@@ -37,6 +37,14 @@
     </developer>
   </developers>
 
+  <distributionManagement>
+    <site>
+      <id>io7m</id>
+      <name>io7m.com</name>
+      <url>http://mvn.io7m.com/jpismo/</url>
+    </site>
+  </distributionManagement>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -47,6 +55,21 @@
     <module>io7m-jpismo-lwjgl</module>
     <module>io7m-jpismo-jogl</module>
   </modules>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.maven.plugin</groupId>
+        <artifactId>emma-maven-plugin</artifactId>
+        <version>1.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <build>
     <plugins>
@@ -61,6 +84,7 @@
         </configuration>
       </plugin>
 
+      <!-- Produce aggregate javadoc for all subprojects -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -70,6 +94,71 @@
             <id>aggregate</id>
             <goals>
               <goal>aggregate</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Validate and transform XML documentation -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>validate</goal>
+              <goal>transform</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <validationSets>
+            <validationSet>
+              <dir>src/main/xml</dir>
+            </validationSet>
+          </validationSets>
+          <transformationSets>
+            <transformationSet>
+              <dir>src/main/xml</dir>
+              <stylesheet>src/main/xsl/structural-1_0_0-standalone-x20.xsl</stylesheet>
+              <parameters>
+                <parameter>
+                  <name>io7m.structural-1_0_0.output_directory</name>
+                  <value>target/xhtml</value>
+                </parameter>
+              </parameters>
+            </transformationSet>
+          </transformationSets>
+          <catalogs>
+            <catalog>src/main/xml/catalog.xml</catalog>
+          </catalogs>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>9.4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+      <!-- Produce documentation archive -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly-doc.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>
