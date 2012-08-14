@@ -45,35 +45,37 @@ import com.io7m.jrpack.Rectangle;
 
 /**
  * <p>
- * The {@link TextRendererAtlasFixed} class implements a renderer for text
- * using fixed-width fonts.
+ * The {@link TextRendererAtlasVariable} class implements a renderer for text
+ * using variable-width fonts.
  * </p>
  * <p>
- * Internally, the renderer breaks incoming text into individual characters
- * and caches these into texture atlases.
+ * Internally, the renderer breaks incoming text into words and caches these
+ * into texture atlases. Note that spaces are not preserved: multiple
+ * successive spaces are collapsed into single spaces in the rendered text.
  * </p>
  * 
  */
 
-public final class TextRendererAtlasFixed implements TextRenderer
+public final class TextRendererAtlasVariable implements TextRenderer
 {
   /**
-   * A CharAtlas represents a large OpenGL texture containing many packed
-   * characters.
+   * A WordAtlas represents a large OpenGL texture containing many packed
+   * words.
    */
 
-  private final class CharAtlas implements GLResource
+  private final class WordAtlas implements GLResource
   {
-    private final @Nonnull Texture2DRGBAStatic           texture;
-    private final @Nonnull Pack1D                        packer;
-    private final @Nonnull HashMap<Character, Rectangle> rectangles;
-    private final @Nonnull BufferedImage                 bitmap;
-    private final @Nonnull Graphics2D                    graphics;
-    private final @Nonnull Log                           atlas_log;
-    private boolean                                      dirty;
-    private boolean                                      atlas_deleted;
+    private final @Nonnull Texture2DRGBAStatic        texture;
+    private final @Nonnull Pack1D                     packer;
+    private final @Nonnull HashMap<String, Rectangle> rectangles;
+    private final @Nonnull BufferedImage              bitmap;
+    private final @Nonnull Graphics2D                 graphics;
+    private final @Nonnull Log                        atlas_log;
+    private final int                                 id;
+    private boolean                                   dirty;
+    private final boolean                             atlas_deleted;
 
-    @SuppressWarnings("synthetic-access") CharAtlas(
+    @SuppressWarnings("synthetic-access") WordAtlas(
       final @Nonnull Log log)
       throws GLException,
         ConstraintError
@@ -81,11 +83,13 @@ public final class TextRendererAtlasFixed implements TextRenderer
       this.atlas_log = log;
       this.atlas_deleted = false;
 
+      this.id = TextRendererAtlasVariable.this.atlases.size();
+
       this.texture =
-        TextRendererAtlasFixed.this.gl.texture2DRGBAStaticAllocate(
-          "char_atlas" + TextRendererAtlasFixed.this.atlases.size(),
-          TextRendererAtlasFixed.this.texture_size,
-          TextRendererAtlasFixed.this.texture_size,
+        TextRendererAtlasVariable.this.gl.texture2DRGBAStaticAllocate(
+          "word_atlas" + this.id,
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
           TextureWrap.TEXTURE_WRAP_REPEAT,
           TextureWrap.TEXTURE_WRAP_REPEAT,
           TextureFilter.TEXTURE_FILTER_NEAREST,
@@ -93,22 +97,22 @@ public final class TextRendererAtlasFixed implements TextRenderer
 
       this.packer =
         new Pack1D(
-          TextRendererAtlasFixed.this.texture_size,
-          TextRendererAtlasFixed.this.texture_size,
-          TextRendererAtlasFixed.this.character_height);
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.textGetLineHeight());
 
-      this.rectangles = new HashMap<Character, Rectangle>();
+      this.rectangles = new HashMap<String, Rectangle>();
       this.dirty = false;
 
       this.bitmap =
         new BufferedImage(
-          TextRendererAtlasFixed.this.texture_size,
-          TextRendererAtlasFixed.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
+          TextRendererAtlasVariable.this.texture_size,
           BufferedImage.TYPE_4BYTE_ABGR);
 
       this.graphics = this.bitmap.createGraphics();
       this.graphics.setColor(Color.WHITE);
-      this.graphics.setFont(TextRendererAtlasFixed.this.font);
+      this.graphics.setFont(TextRendererAtlasVariable.this.font);
 
       if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
         final StringBuilder builder = new StringBuilder();
@@ -119,34 +123,37 @@ public final class TextRendererAtlasFixed implements TextRenderer
       }
     }
 
-    @SuppressWarnings("synthetic-access") Rectangle cacheCharacter(
-      final char character)
+    @SuppressWarnings("synthetic-access") Rectangle cacheWord(
+      final @Nonnull String word)
       throws ConstraintError,
         TextCacheException
     {
-      final Character boxed = Character.valueOf(character);
-
       /*
        * Word is already cached? Return the rectangle.
        */
 
-      if (this.rectangles.containsKey(boxed)) {
+      if (this.rectangles.containsKey(word)) {
         if (this.atlas_log.enabled(Level.LOG_DEBUG)) {
           final StringBuilder builder = new StringBuilder();
           builder.append("cache ");
           builder.append(this);
           builder.append(" exists '");
-          builder.append(character);
+          builder.append(word);
           builder.append("'");
           this.atlas_log.debug(builder.toString());
         }
-        return this.rectangles.get(boxed);
+        return this.rectangles.get(word);
       }
 
-      final PackResult result =
-        this.packer.insert(TextRendererAtlasFixed.this.character_width
-          + TextRendererAtlasFixed.PAD_PACK_BORDER);
+      /*
+       * Otherwise, pack the rectangle.
+       */
 
+      final int width =
+        TextRendererAtlasVariable.this.font_metrics.stringWidth(word)
+          + TextRendererAtlasVariable.PAD_PACK_BORDER;
+
+      final PackResult result = this.packer.insert(width);
       switch (result.type) {
         case PACK_RESULT_OK:
         {
@@ -155,19 +162,15 @@ public final class TextRendererAtlasFixed implements TextRenderer
             builder.append("cache ");
             builder.append(this);
             builder.append(" success '");
-            builder.append(character);
+            builder.append(word);
             builder.append("'");
             this.atlas_log.debug(builder.toString());
           }
 
           final PackOK ok = (PackOK) result;
-          final int actual_width = ok.rectangle.getWidth();
-          final int expected_width =
-            TextRendererAtlasFixed.this.character_width + 1;
-
-          assert (actual_width == expected_width);
-          this.writeChar(character, ok.rectangle);
-          this.rectangles.put(boxed, ok.rectangle);
+          assert (ok.rectangle.getWidth() == width);
+          this.writeWord(word, ok.rectangle);
+          this.rectangles.put(word, ok.rectangle);
           return ok.rectangle;
         }
         case PACK_RESULT_TOO_LARGE:
@@ -177,11 +180,11 @@ public final class TextRendererAtlasFixed implements TextRenderer
             builder.append("cache ");
             builder.append(this);
             builder.append(" word too large '");
-            builder.append(character);
+            builder.append(word);
             builder.append("'");
             this.atlas_log.debug(builder.toString());
           }
-          throw new TextCacheException(result.type, character);
+          throw new TextCacheException(result.type, word);
         }
         case PACK_RESULT_OUT_OF_SPACE:
         {
@@ -190,11 +193,11 @@ public final class TextRendererAtlasFixed implements TextRenderer
             builder.append("cache ");
             builder.append(this);
             builder.append(" out of space '");
-            builder.append(character);
+            builder.append(word);
             builder.append("'");
             this.atlas_log.debug(builder.toString());
           }
-          throw new TextCacheException(result.type, character);
+          throw new TextCacheException(result.type, word);
         }
       }
 
@@ -202,9 +205,45 @@ public final class TextRendererAtlasFixed implements TextRenderer
       throw new AssertionError("unreachable code!");
     }
 
+    @Override public boolean equals(
+      final Object obj)
+    {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (this.getClass() != obj.getClass()) {
+        return false;
+      }
+      final WordAtlas other = (WordAtlas) obj;
+      if (!this.getOuterType().equals(other.getOuterType())) {
+        return false;
+      }
+      if (this.id != other.id) {
+        return false;
+      }
+      return true;
+    }
+
+    private TextRendererAtlasVariable getOuterType()
+    {
+      return TextRendererAtlasVariable.this;
+    }
+
     Texture2DRGBAStatic getTexture()
     {
       return this.texture;
+    }
+
+    @Override public int hashCode()
+    {
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + this.getOuterType().hashCode();
+      result = (prime * result) + this.id;
+      return result;
     }
 
     boolean isDirty()
@@ -218,7 +257,6 @@ public final class TextRendererAtlasFixed implements TextRenderer
         GLException
     {
       this.texture.resourceDelete(gli);
-      this.atlas_deleted = true;
     }
 
     @Override public boolean resourceIsDeleted()
@@ -240,8 +278,8 @@ public final class TextRendererAtlasFixed implements TextRenderer
         ConstraintError
     {
       final PixelUnpackBufferWritableMap map =
-        TextRendererAtlasFixed.this.gl.pixelUnpackBufferMapWrite(this.texture
-          .getBuffer());
+        TextRendererAtlasVariable.this.gl
+          .pixelUnpackBufferMapWrite(this.texture.getBuffer());
 
       try {
         final ByteBuffer target_buffer = map.getByteBuffer();
@@ -250,24 +288,26 @@ public final class TextRendererAtlasFixed implements TextRenderer
         target_buffer.put(source_buffer.getData());
         target_buffer.rewind();
       } finally {
-        TextRendererAtlasFixed.this.gl.pixelUnpackBufferUnmap(this.texture
+        TextRendererAtlasVariable.this.gl.pixelUnpackBufferUnmap(this.texture
           .getBuffer());
       }
 
-      TextRendererAtlasFixed.this.gl.texture2DRGBAStaticReplace(this.texture);
+      TextRendererAtlasVariable.this.gl
+        .texture2DRGBAStaticReplace(this.texture);
       this.dirty = false;
     }
 
-    @SuppressWarnings("synthetic-access") private void writeChar(
-      final char character,
+    @SuppressWarnings("synthetic-access") private void writeWord(
+      final @Nonnull String word,
       final @Nonnull Rectangle rectangle)
     {
-      final int ascent = TextRendererAtlasFixed.this.font_metrics.getAscent();
+      final int ascent =
+        TextRendererAtlasVariable.this.font_metrics.getAscent();
       final int x = rectangle.x0;
       final int y = rectangle.y0 + ascent;
 
       this.graphics.setColor(Color.WHITE);
-      this.graphics.drawString("" + character, x, y);
+      this.graphics.drawString(word, x, y);
 
       this.bitmap.flush();
       this.dirty = true;
@@ -283,8 +323,8 @@ public final class TextRendererAtlasFixed implements TextRenderer
   private static final int PAD_PACK_BORDER = 1;
 
   private static void addQuad(
-    final @Nonnull CharAtlas atlas,
-    final @Nonnull HashMap<CharAtlas, Integer> counts)
+    final @Nonnull WordAtlas atlas,
+    final @Nonnull HashMap<WordAtlas, Integer> counts)
   {
     final Integer count = counts.get(atlas);
     if (count != null) {
@@ -294,21 +334,25 @@ public final class TextRendererAtlasFixed implements TextRenderer
     }
   }
 
+  private static String[] splitWords(
+    final @Nonnull String line)
+  {
+    return line.split("\\s+");
+  }
+
   private final @Nonnull GLInterface           gl;
   private final @Nonnull Font                  font;
   private final @Nonnull Log                   log;
   private final @Nonnull BufferedImage         base_image;
   private final @Nonnull Graphics2D            base_graphics;
   private final @Nonnull FontMetrics           font_metrics;
-  private final @Nonnull ArrayList<CharAtlas>  atlases;
-  private final @Nonnull ArrayBufferDescriptor descriptor;
+  private final @Nonnull ArrayList<WordAtlas>  atlases;
+  private final int                            font_space_width;
   private final int                            texture_size;
-  private final int                            character_width;
-
-  private final int                            character_height;
+  private final @Nonnull ArrayBufferDescriptor descriptor;
   private boolean                              deleted;
 
-  public TextRendererAtlasFixed(
+  public TextRendererAtlasVariable(
     final @Nonnull GLInterface gl,
     final @Nonnull Font font,
     final @Nonnull Log log)
@@ -318,9 +362,9 @@ public final class TextRendererAtlasFixed implements TextRenderer
     this.gl = Constraints.constrainNotNull(gl, "GL interface");
     this.font = Constraints.constrainNotNull(font, "Font");
     this.log =
-      new Log(Constraints.constrainNotNull(log, "Log interface"), "fix-text");
+      new Log(Constraints.constrainNotNull(log, "Log interface"), "vtext");
 
-    this.atlases = new ArrayList<CharAtlas>();
+    this.atlases = new ArrayList<TextRendererAtlasVariable.WordAtlas>();
     this.texture_size = this.decideTextureSize();
 
     /*
@@ -331,9 +375,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
     this.base_image = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
     this.base_graphics = this.base_image.createGraphics();
     this.font_metrics = this.base_graphics.getFontMetrics(this.font);
-
-    this.character_height = this.font_metrics.getHeight();
-    this.character_width = this.font_metrics.charWidth(' ');
+    this.font_space_width = this.font_metrics.stringWidth(" ");
 
     /*
      * Initialize array buffer type descriptor for compiled texts.
@@ -343,20 +385,27 @@ public final class TextRendererAtlasFixed implements TextRenderer
       new ArrayBufferDescriptor(new ArrayBufferAttribute[] {
         new ArrayBufferAttribute("position", GLScalarType.TYPE_FLOAT, 2),
         new ArrayBufferAttribute("uv", GLScalarType.TYPE_FLOAT, 2) });
+
+    this.deleted = false;
   }
 
-  public void cacheASCII()
+  private void cacheLineInner(
+    final @Nonnull String line)
     throws GLException,
       ConstraintError,
       TextCacheException
   {
-    for (char c = 0; c < 0xff; ++c) {
-      this.cacheCharacter(c);
+    final String[] words = TextRendererAtlasVariable.splitWords(line);
+
+    for (final String word : words) {
+      if (word.equals("") == false) {
+        this.cacheWord(word);
+      }
     }
   }
 
-  private @Nonnull Pair<CharAtlas, Rectangle> cacheCharacter(
-    final char c)
+  private @Nonnull Pair<WordAtlas, Rectangle> cacheWord(
+    final @Nonnull String word)
     throws ConstraintError,
       GLException,
       TextCacheException
@@ -365,10 +414,10 @@ public final class TextRendererAtlasFixed implements TextRenderer
      * Attempt to cache the given word in one of the current atlases.
      */
 
-    for (final CharAtlas atlas : this.atlases) {
+    for (final WordAtlas atlas : this.atlases) {
       try {
-        final Rectangle rectangle = atlas.cacheCharacter(c);
-        return new Pair<CharAtlas, Rectangle>(atlas, rectangle);
+        final Rectangle rectangle = atlas.cacheWord(word);
+        return new Pair<WordAtlas, Rectangle>(atlas, rectangle);
       } catch (final TextCacheException e) {
         switch (e.getResultCode()) {
           case PACK_RESULT_OK:
@@ -385,26 +434,15 @@ public final class TextRendererAtlasFixed implements TextRenderer
      * None of the atlases could cache the word. Create a new atlas and cache.
      */
 
-    final CharAtlas atlas = new CharAtlas(this.log);
+    final WordAtlas atlas = new WordAtlas(this.log);
     this.atlases.add(atlas);
-    return new Pair<CharAtlas, Rectangle>(atlas, atlas.cacheCharacter(c));
-  }
-
-  private void cacheLineInner(
-    final @Nonnull String line)
-    throws GLException,
-      ConstraintError,
-      TextCacheException
-  {
-    final int max = line.length();
-    for (int index = 0; index < max; ++index) {
-      this.cacheCharacter(line.charAt(index));
-    }
+    return new Pair<WordAtlas, Rectangle>(atlas, atlas.cacheWord(word));
   }
 
   /**
    * Dump the internal texture atlases to PNG files in the directory specified
-   * by <code>directory</code>.
+   * by <code>directory</code>. This is only of use for debugging the
+   * implementation of the text renderer.
    * 
    * @param directory
    *          The output directory.
@@ -419,7 +457,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
     throws FileNotFoundException,
       IOException
   {
-    for (final CharAtlas atlas : this.atlases) {
+    for (final WordAtlas atlas : this.atlases) {
       final String name = atlas.getTexture().getName();
       final String path = directory + "/" + name + ".png";
       this.log.debug("dumping " + path);
@@ -454,7 +492,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
     throws ConstraintError,
       GLException
   {
-    for (final CharAtlas a : this.atlases) {
+    for (final WordAtlas a : this.atlases) {
       a.resourceDelete(gli);
     }
     this.deleted = true;
@@ -478,14 +516,14 @@ public final class TextRendererAtlasFixed implements TextRenderer
     throws GLException,
       ConstraintError
   {
-    for (final CharAtlas atlas : this.atlases) {
+    for (final WordAtlas atlas : this.atlases) {
       if (atlas.isDirty()) {
         atlas.upload();
       }
     }
   }
 
-  @Override public CompiledText textCompile(
+  @Override public @Nonnull CompiledText textCompile(
     final @Nonnull ArrayList<String> text)
     throws GLException,
       ConstraintError,
@@ -495,33 +533,33 @@ public final class TextRendererAtlasFixed implements TextRenderer
     float max_width = 2.0f;
     float max_height = 2.0f;
 
-    final HashMap<CharAtlas, Integer> quad_counts =
-      new HashMap<CharAtlas, Integer>();
-    final HashMap<CharAtlas, CompiledPage> texts =
-      new HashMap<CharAtlas, CompiledPage>();
+    final HashMap<WordAtlas, Integer> quad_counts =
+      new HashMap<WordAtlas, Integer>();
+    final HashMap<String, String[]> word_cache =
+      new HashMap<String, String[]>();
+    final HashMap<WordAtlas, CompiledPage> texts =
+      new HashMap<WordAtlas, CompiledPage>();
 
     /*
-     * For each line, determine the number of quads required for characters
-     * using each atlas.
+     * For each line, determine the number of quads required for words using
+     * each atlas.
      */
 
     for (final String line : text) {
-      final int max = line.length();
-      max_width = Math.max(max_width, max * this.character_width);
-
-      for (int index = 0; index < max; ++index) {
-        final Pair<CharAtlas, Rectangle> pair =
-          this.cacheCharacter(line.charAt(index));
-        TextRendererAtlasFixed.addQuad(pair.first, quad_counts);
+      final String[] words = TextRendererAtlasVariable.splitWords(line);
+      for (final String word : words) {
+        final Pair<WordAtlas, Rectangle> pair = this.cacheWord(word);
+        TextRendererAtlasVariable.addQuad(pair.first, quad_counts);
       }
+      word_cache.put(line, words);
     }
 
     /*
      * Allocate vertex and index buffers.
      */
 
-    for (final Entry<CharAtlas, Integer> entry : quad_counts.entrySet()) {
-      final CharAtlas atlas = entry.getKey();
+    for (final Entry<WordAtlas, Integer> entry : quad_counts.entrySet()) {
+      final WordAtlas atlas = entry.getKey();
       final Integer quad_count = entry.getValue();
       final int vertx_count = quad_count.intValue() * 4;
       final int index_count = quad_count.intValue() * 6;
@@ -529,6 +567,7 @@ public final class TextRendererAtlasFixed implements TextRenderer
         this.gl.arrayBufferAllocate(vertx_count, this.descriptor);
       final IndexBuffer index_buffer =
         this.gl.indexBufferAllocate(array_buffer, index_count);
+
       texts.put(
         atlas,
         new CompiledPage(
@@ -545,8 +584,8 @@ public final class TextRendererAtlasFixed implements TextRenderer
      * α.
      */
 
-    for (final Entry<CharAtlas, CompiledPage> entry : texts.entrySet()) {
-      final CharAtlas wanted_atlas = entry.getKey();
+    for (final Entry<WordAtlas, CompiledPage> entry : texts.entrySet()) {
+      final WordAtlas wanted_atlas = entry.getKey();
       final CompiledPage comp = entry.getValue();
       int index = 0;
       int quad = 0;
@@ -564,16 +603,15 @@ public final class TextRendererAtlasFixed implements TextRenderer
           map_array.getCursor2f("uv");
 
         for (final String line : text) {
-          final int max = line.length();
           float x_offset = 0.0f;
+          final String[] line_words = word_cache.get(line);
 
-          for (int char_index = 0; char_index < max; ++char_index) {
-            final Pair<CharAtlas, Rectangle> pair =
-              this.cacheCharacter(line.charAt(char_index));
-            final CharAtlas char_atlas = pair.first;
+          for (final String word : line_words) {
+            final Pair<WordAtlas, Rectangle> pair = this.cacheWord(word);
+            final WordAtlas word_atlas = pair.first;
             final Rectangle rect = pair.second;
 
-            if (char_atlas == wanted_atlas) {
+            if (word_atlas == wanted_atlas) {
               final float u0 = rect.x0 * size_divisor;
               final float v0 = rect.y0 * size_divisor;
               final float u1 = (rect.x1) * size_divisor;
@@ -645,9 +683,10 @@ public final class TextRendererAtlasFixed implements TextRenderer
               quad_base = quad * 4;
             }
 
-            x_offset += rect.getWidth();
+            x_offset += rect.getWidth() + this.font_space_width;
+            max_width = Math.max(x_offset, max_width);
           }
-          y_offset += this.character_height;
+          y_offset += this.font_metrics.getHeight();
           max_height = Math.max(y_offset, max_height);
         }
       } finally {
@@ -685,6 +724,31 @@ public final class TextRendererAtlasFixed implements TextRenderer
       ConstraintError,
       TextCacheException
   {
-    return line.length() * this.character_width;
+    final String[] words = TextRendererAtlasVariable.splitWords(line);
+    int width = 0;
+
+    for (int index = 0; index < words.length; ++index) {
+      final Pair<WordAtlas, Rectangle> pair = this.cacheWord(words[index]);
+      final Rectangle rect = pair.second;
+
+      if ((index + 1) != words.length) {
+        width += rect.getWidth() + this.font_space_width;
+      } else {
+        width += rect.getWidth();
+      }
+    }
+
+    return width;
+  }
+
+  @Override public String toString()
+  {
+    final StringBuilder builder = new StringBuilder();
+    builder.append("[VariableTextRenderer [Font ");
+    builder.append(this.font.getName());
+    builder.append(" ");
+    builder.append(this.font.getSize());
+    builder.append("]]");
+    return builder.toString();
   }
 }
