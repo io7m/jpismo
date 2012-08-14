@@ -39,7 +39,7 @@ public final class ExampleRunnerLWJGL30 implements Runnable
   private final Example     example;
   private final Properties  log_properties;
 
-  void initDisplay()
+  static void initDisplay()
     throws LWJGLException
   {
     Display.setDisplayMode(new DisplayMode(
@@ -65,7 +65,7 @@ public final class ExampleRunnerLWJGL30 implements Runnable
     this.file = Constraints.constrainNotNull(file, "File");
     this.example = Constraints.constrainNotNull(ex, "Example");
 
-    this.initDisplay();
+    ExampleRunnerLWJGL30.initDisplay();
 
     this.gl = new GLInterfaceLWJGL30(this.log);
     this.example.initialize(this.log, this.gl, this.file);
