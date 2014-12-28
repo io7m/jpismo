@@ -9,10 +9,10 @@
     <artifactId>io7m-jpismo</artifactId>
     <version>0.1.0</version>
   </parent>
-  <artifactId>io7m-jpismo-core</artifactId>
+  <artifactId>io7m-jpismo-awt</artifactId>
 
   <packaging>jar</packaging>
-  <description>OpenGL text rendering (Core)</description>
+  <description>OpenGL text rendering (AWT implementation)</description>
   <url>http://mvn.io7m.com/${project.artifactId}/</url>
   <name>${project.artifactId}</name>
 
@@ -72,14 +72,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.io7m.jcanephora</groupId>
-      <artifactId>io7m-jcanephora-core</artifactId>
-      <version>${com.io7m.jcanephora.versionRange}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.io7m.jtensors</groupId>
-      <artifactId>io7m-jtensors-core</artifactId>
-      <version>${com.io7m.jtensors.versionRange}</version>
+      <groupId>com.io7m.jpismo</groupId>
+      <artifactId>io7m-jpismo-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
@@ -96,22 +91,16 @@
     </dependency>
   </dependencies>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.maven.plugin</groupId>
-        <artifactId>emma-maven-plugin</artifactId>
-        <version>1.2</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
   <build>
+    <!-- Allow deployment over ssh -->
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.2</version>
+      </extension>
+    </extensions>
+
     <plugins>
       <!-- Plugin versions -->
       <plugin>

@@ -1,9 +1,2 @@
-bin
-build
-doc-out
-ext
-io7m-jpismo-core/target
-io7m-jpismo-jogl/target
-io7m-jpismo-lwjgl/target
-javadoc
+io7m-jpismo-*/target
 target

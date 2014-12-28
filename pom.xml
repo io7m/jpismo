@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.io7m.jpismo</groupId>
   <artifactId>io7m-jpismo</artifactId>
-  <version>1.0.0</version>
-  <name>io7m-jpismo</name>
-  <description>OpenGL text renderer</description>
-  <url>http://mvn.io7m.com/jpismo/</url>
+  <version>0.1.0</version>
+
   <packaging>pom</packaging>
+  <name>io7m-jpismo</name>
+  <description>OpenGL text rendering</description>
+  <url>http://mvn.io7m.com/${project.artifactId}/</url>
+
+  <modules>
+    <module>io7m-jpismo-awt</module>
+    <module>io7m-jpismo-core</module>
+    <module>io7m-jpismo-documentation</module>
+    <module>io7m-jpismo-tests-awt-jogl</module>
+    <module>io7m-jpismo-tests</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <com.io7m.jcache.versionRange>[0.7.1, 0.8.0)</com.io7m.jcache.versionRange>
+    <com.io7m.jcanephora.versionRange>0.35.0</com.io7m.jcanephora.versionRange>
+    <com.io7m.jequality.versionRange>[1.0.1, 2.0.0)</com.io7m.jequality.versionRange>
+    <com.io7m.jfunctional.versionRange>[1.0.0, 2.0.0)</com.io7m.jfunctional.versionRange>
+    <com.io7m.jintegers.versionRange>[1.0.0, 2.0.0)</com.io7m.jintegers.versionRange>
+    <com.io7m.jlog.versionRange>[3.1.0, 4.0.0)</com.io7m.jlog.versionRange>
+    <com.io7m.jnull.versionRange>[1.0.0, 2.0.0)</com.io7m.jnull.versionRange>
+    <com.io7m.jrpack.versionRange>[2.2.0, 3.0.0)</com.io7m.jrpack.versionRange>
+    <com.io7m.jparasol.versionRange>[0.10.6, 0.11.0)</com.io7m.jparasol.versionRange>
+    <com.io7m.jproperties.versionRange>[1.0.0, 2.0.0)</com.io7m.jproperties.versionRange>
+    <com.io7m.jranges.versionRange>[1.0.0, 2.0.0)</com.io7m.jranges.versionRange>
+    <com.io7m.jtensors.versionRange>[7.0.0-b2, 7.0.0)</com.io7m.jtensors.versionRange>
+    <com.io7m.junreachable.versionRange>[1.0.0, 2.0.0)</com.io7m.junreachable.versionRange>
+
+    <org.jogamp.jogl.versionRange>2.2.4</org.jogamp.jogl.versionRange>
+
+    <siteReposDirectory>/com/io7m/jpismo</siteReposDirectory>
+    <siteDocumentationDirectory>/com/io7m/jpismo/io7m-jpismo-documentation</siteDocumentationDirectory>
+  </properties>
 
   <licenses>
     <license>
@@ -23,11 +59,6 @@
     <developerConnection>scm:http://fossil.io7m.com/repo.cgi/io7m-jpismo</developerConnection>
   </scm>
 
-  <issueManagement>
-    <url>http://fossil.io7m.com/repo.cgi/io7m-jpismo</url>
-    <system>Fossil</system>
-  </issueManagement>
-
   <developers>
     <developer>
       <id>io7m</id>
@@ -37,142 +68,84 @@
     </developer>
   </developers>
 
+  <issueManagement>
+    <url>http://fossil.io7m.com/repo.cgi/io7m-jpismo</url>
+    <system>Fossil</system>
+  </issueManagement>
+
   <distributionManagement>
     <site>
       <id>io7m</id>
       <name>io7m.com</name>
-      <url>http://mvn.io7m.com/jpismo/</url>
+      <url>${project.url}</url>
     </site>
   </distributionManagement>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
+  <mailingLists>
+    <mailingList>
+      <name>io7m-jpismo</name>
+      <subscribe>io7m-jpismo-join@lists.io7m.com</subscribe>
+      <unsubscribe>io7m-jpismo-leave@lists.io7m.com</unsubscribe>
+      <post>io7m-jpismo@lists.io7m.com</post>
+      <archive>http://lists.io7m.com/io7m-jpismo/archive</archive>
+    </mailingList>
+  </mailingLists>
 
-  <modules>
-    <module>io7m-jpismo-core</module>
-    <module>io7m-jpismo-lwjgl</module>
-    <module>io7m-jpismo-jogl</module>
-  </modules>
+  <prerequisites>
+    <maven>2.2.1</maven>
+  </prerequisites>
 
   <reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.6</version>
+        <version>2.7</version>
         <configuration>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.sonatype.maven.plugin</groupId>
-        <artifactId>emma-maven-plugin</artifactId>
-        <version>1.2</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.3</version>
+      </plugin>
+      <plugin>
+        <groupId>com.io7m.changelog</groupId>
+        <artifactId>io7m-changelog-plugin</artifactId>
+        <version>2.1.0</version>
+        <inherited>false</inherited>
+        <configuration>
+          <file>README-CHANGES.xml</file>
+          <feedAuthorEmail>contact@io7m.com</feedAuthorEmail>
+          <feedAuthorName>io7m release robot</feedAuthorName>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>
 
   <build>
     <plugins>
-      <!-- Require JDK >= 1.6 -->
+      <!-- Plugin versions -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
       </plugin>
-
-      <!-- Produce aggregate javadoc for all subprojects -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8.1</version>
-        <executions>
-          <execution>
-            <id>aggregate</id>
-            <goals>
-              <goal>aggregate</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.7</version>
       </plugin>
-
-      <!-- Transform XML documentation with Saxon -->
       <plugin>
-        <groupId>com.io7m.saxon-plugin</groupId>
-        <artifactId>io7m-saxon-plugin</artifactId>
-        <version>1.1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>transform</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <transformation>
-            <stylesheetFile>src/main/xsl/structural-1_0_0-standalone-x20.xsl</stylesheetFile>
-            <documentFile>src/main/xml/documentation.xml</documentFile>
-            <outputDirectory>${project.build.directory}/xhtml</outputDirectory>
-            <outputDirectoryParameterName>io7m.structural-1_0_0.output_directory</outputDirectoryParameterName>
-            <outputFile>out.txt</outputFile>
-          </transformation>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.4</version>
       </plugin>
-
-      <!-- Validate XML documentation -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>xml-maven-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>validate</goal>
-              <goal>transform</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <validationSets>
-            <validationSet>
-              <dir>src/main/xml</dir>
-            </validationSet>
-          </validationSets>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>Saxon-HE</artifactId>
-            <version>9.4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-      <!-- Produce documentation archive -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly-doc.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.6</version>
       </plugin>
     </plugins>
 
@@ -184,6 +157,36 @@
         <version>2.2</version>
       </extension>
     </extensions>
+
+    <!-- Mark plugins as ignored in Eclipse, does not affect the build. -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.sonatype.maven.plugin</groupId>
+                    <artifactId>emma-maven-plugin</artifactId>
+                    <versionRange>[1.2,)</versionRange>
+                    <goals>
+                      <goal>instrument</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <!-- Sign artifacts when deploying to io7m -->
@@ -215,5 +218,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>

@@ -9,10 +9,10 @@
     <artifactId>io7m-jpismo</artifactId>
     <version>0.1.0</version>
   </parent>
-  <artifactId>io7m-jpismo-core</artifactId>
+  <artifactId>io7m-jpismo-tests-awt-jogl</artifactId>
 
   <packaging>jar</packaging>
-  <description>OpenGL text rendering (Core)</description>
+  <description>OpenGL text rendering (AWT/JOGL implementation of test contracts)</description>
   <url>http://mvn.io7m.com/${project.artifactId}/</url>
   <name>${project.artifactId}</name>
 
@@ -72,46 +72,70 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.io7m.jcanephora</groupId>
-      <artifactId>io7m-jcanephora-core</artifactId>
-      <version>${com.io7m.jcanephora.versionRange}</version>
+      <groupId>com.io7m.jnull</groupId>
+      <artifactId>io7m-jnull-core</artifactId>
+      <version>${com.io7m.jnull.versionRange}</version>
     </dependency>
     <dependency>
-      <groupId>com.io7m.jtensors</groupId>
-      <artifactId>io7m-jtensors-core</artifactId>
-      <version>${com.io7m.jtensors.versionRange}</version>
+      <groupId>com.io7m.junreachable</groupId>
+      <artifactId>io7m-junreachable-core</artifactId>
+      <version>${com.io7m.junreachable.versionRange}</version>
     </dependency>
 
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io7m-jpismo-core</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.9-RC2</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io7m-jpismo-awt</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io7m-jpismo-tests</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jcanephora</groupId>
+      <artifactId>io7m-jcanephora-jogl</artifactId>
+      <version>${com.io7m.jcanephora.versionRange}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jcanephora</groupId>
+      <artifactId>io7m-jcanephora-batchexec</artifactId>
+      <version>${com.io7m.jcanephora.versionRange}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jogamp.gluegen</groupId>
+      <artifactId>gluegen-rt-main</artifactId>
+      <version>${org.jogamp.jogl.versionRange}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jogamp.jogl</groupId>
+      <artifactId>jogl-all-main</artifactId>
+      <version>${org.jogamp.jogl.versionRange}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.maven.plugin</groupId>
-        <artifactId>emma-maven-plugin</artifactId>
-        <version>1.2</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
   <build>
+    <!-- Allow deployment over ssh -->
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.2</version>
+      </extension>
+    </extensions>
+
     <plugins>
       <!-- Plugin versions -->
       <plugin>
@@ -151,42 +175,26 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.4</version>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Specification-Title>${project.name}</Specification-Title>
-              <Specification-Version>${project.version}</Specification-Version>
-              <Specification-Vendor>io7m.com</Specification-Vendor>
-              <Implementation-Title>${project.name}</Implementation-Title>
-              <Implementation-Version>${project.version}</Implementation-Version>
-              <Implementation-Vendor>io7m.com</Implementation-Vendor>
-              <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
-              <Built-By>io7m</Built-By>
-              <Sealed>true</Sealed>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <!-- Check style -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.11</version>
         <executions>
           <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <configuration>
-              <configLocation>../checkstyle.xml</configLocation>
-              <encoding>UTF-8</encoding>
-              <consoleOutput>true</consoleOutput>
-              <failsOnError>true</failsOnError>
-              <linkXRef>false</linkXRef>
-            </configuration>
             <goals>
-              <goal>check</goal>
+              <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Specification-Title>${project.name}</Specification-Title>
+                  <Specification-Version>${project.version}</Specification-Version>
+                  <Specification-Vendor>io7m.com</Specification-Vendor>
+                  <Implementation-Title>${project.name}</Implementation-Title>
+                  <Implementation-Version>${project.version}</Implementation-Version>
+                  <Implementation-Vendor>io7m.com</Implementation-Vendor>
+                  <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
+                  <Built-By>io7m</Built-By>
+                  <Sealed>true</Sealed>
+                </manifestEntries>
+              </archive>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -250,6 +258,16 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Tell the surefire plugin to redirect test output -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.15</version>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
       </plugin>
 
       <!-- Enable code coverage for unit tests -->
