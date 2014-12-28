@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -17,55 +17,28 @@
 package com.io7m.jpismo;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
- * The type of font loaders.
+ * The type of typeface loaders.
  */
 
-public interface PTypefacesLoaderType
+public interface PTypefaceLoaderType
 {
   /**
-   * @return The default font
-   */
-
-  PTypefaceType getDefault();
-
-  /**
-   * @return The default monospace font
-   */
-
-  PTypefaceType getMonospace();
-
-  /**
-   * @return The default sans-serif font
-   */
-
-  PTypefaceType getSansSerif();
-
-  /**
-   * @return The default serif font
-   */
-
-  PTypefaceType getSerif();
-
-  /**
-   * Load what is assumed to be a TrueType font from the given stream.
+   * Load what is assumed to be a TrueType typeface with the given name.
    *
    * @param name
-   *          The name of the font, used for identification
-   * @param s
-   *          The stream
-   * @return A loaded font
+   *          The name of the typeface to be loaded
+   *
+   * @return A loaded typeface
    * @throws IOException
    *           On I/O errors
    * @throws PException
    *           On other errors
    */
 
-  PTypefaceType loadTrueTypeFromStream(
-    String name,
-    InputStream s)
+  PTypefaceType loadTrueType(
+    String name)
     throws IOException,
       PException;
 }

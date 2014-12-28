@@ -19,6 +19,7 @@ package com.io7m.jpismo.awt;
 import com.io7m.jcanephora.api.JCGLImplementationType;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jpismo.PTextRendererType;
+import com.io7m.jpismo.PTypefaceLoaderType;
 import com.io7m.junreachable.UnreachableCodeException;
 
 /**
@@ -34,13 +35,16 @@ import com.io7m.junreachable.UnreachableCodeException;
    *
    * @param in_gi
    *          An OpenGL implementation
+   * @param in_loader
+   *          A typeface loader
    * @return A new text renderer
    */
 
   public static PTextRendererType newTextRenderer(
-    final JCGLImplementationType in_gi)
+    final JCGLImplementationType in_gi,
+    final PTypefaceLoaderType in_loader)
   {
-    return new PTextRendererAWTTrivialActual(in_gi);
+    return new PTextRendererAWTTrivialActual(in_gi, in_loader);
   }
 
   private PTextRendererAWTTrivial()

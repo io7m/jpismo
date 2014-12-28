@@ -14,34 +14,5 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jpismo.tests;
+@com.io7m.jnull.NonNullByDefault package com.io7m.jpismo.android;
 
-import org.junit.Assume;
-import org.junit.Before;
-
-import com.io7m.jcanephora.api.JCGLImplementationType;
-import com.io7m.jpismo.PTextRendererType;
-import com.io7m.jpismo.PTypefaceLoaderType;
-
-// CHECKSTYLE_JAVADOC:OFF
-
-public abstract class PAbstractTestContract implements TestContractType
-{
-  public PAbstractTestContract()
-  {
-    super();
-  }
-
-  @Before public final void checkSupport()
-  {
-    Assume.assumeTrue(this.isGLSupported());
-  }
-
-  public abstract JCGLImplementationType getGLImplementation();
-
-  public abstract PTypefaceLoaderType getTypefaceLoader();
-
-  public abstract PTextRendererType getTextRenderer(
-    final JCGLImplementationType gi,
-    final PTypefaceLoaderType loader);
-}

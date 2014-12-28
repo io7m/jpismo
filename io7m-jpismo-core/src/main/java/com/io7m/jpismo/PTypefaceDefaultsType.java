@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- *
+ * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -14,34 +14,35 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jpismo.tests;
+package com.io7m.jpismo;
 
-import org.junit.Assume;
-import org.junit.Before;
+/**
+ * The interface to the implementation's default typefaces.
+ */
 
-import com.io7m.jcanephora.api.JCGLImplementationType;
-import com.io7m.jpismo.PTextRendererType;
-import com.io7m.jpismo.PTypefaceLoaderType;
-
-// CHECKSTYLE_JAVADOC:OFF
-
-public abstract class PAbstractTestContract implements TestContractType
+public interface PTypefaceDefaultsType
 {
-  public PAbstractTestContract()
-  {
-    super();
-  }
+  /**
+   * @return The default typeface
+   */
 
-  @Before public final void checkSupport()
-  {
-    Assume.assumeTrue(this.isGLSupported());
-  }
+  PTypefaceType getDefault();
 
-  public abstract JCGLImplementationType getGLImplementation();
+  /**
+   * @return The default monospace typeface
+   */
 
-  public abstract PTypefaceLoaderType getTypefaceLoader();
+  PTypefaceType getMonospace();
 
-  public abstract PTextRendererType getTextRenderer(
-    final JCGLImplementationType gi,
-    final PTypefaceLoaderType loader);
+  /**
+   * @return The default sans-serif typeface
+   */
+
+  PTypefaceType getSansSerif();
+
+  /**
+   * @return The default serif typeface
+   */
+
+  PTypefaceType getSerif();
 }

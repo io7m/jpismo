@@ -18,6 +18,7 @@ package com.io7m.jpismo.tests.awt_jogl;
 
 import com.io7m.jcanephora.api.JCGLImplementationType;
 import com.io7m.jpismo.PTextRendererType;
+import com.io7m.jpismo.PTypefaceLoaderType;
 import com.io7m.jpismo.awt.PTextRendererAWTTrivial;
 import com.io7m.jpismo.tests.PTextBuilderContract;
 
@@ -29,13 +30,19 @@ public final class PTextBuilderGLES2Test extends PTextBuilderContract
   }
 
   @Override public PTextRendererType getTextRenderer(
-    final JCGLImplementationType gi)
+    final JCGLImplementationType gi,
+    final PTypefaceLoaderType loader)
   {
-    return PTextRendererAWTTrivial.newTextRenderer(gi);
+    return PTextRendererAWTTrivial.newTextRenderer(gi, loader);
   }
 
   @Override public boolean isGLSupported()
   {
     return PJOGLTestContext.isOpenGLES2Supported();
+  }
+
+  @Override public PTypefaceLoaderType getTypefaceLoader()
+  {
+    return new PTypefaceLoaderAWT();
   }
 }

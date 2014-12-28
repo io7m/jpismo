@@ -1,10 +1,10 @@
 /*
  * Copyright © 2014 <code@io7m.com> http://io7m.com
- * 
+ *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
  * copyright notice and this permission notice appear in all copies.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
@@ -14,35 +14,39 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.jpismo.tests.awt_jogl;
+package com.io7m.jpismo.android;
 
 import com.io7m.jcanephora.api.JCGLImplementationType;
+import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jpismo.PTextRendererType;
 import com.io7m.jpismo.PTypefaceLoaderType;
-import com.io7m.jpismo.awt.PTextRendererAWTTrivial;
-import com.io7m.jpismo.tests.PTextBuilderContract;
+import com.io7m.junreachable.UnreachableCodeException;
 
-public final class PTextBuilderGLES3Test extends PTextBuilderContract
+/**
+ * The Android implementation of {@link PTextRendererType}.
+ */
+
+@EqualityReference public final class PTextRendererAndroid
 {
-  @Override public JCGLImplementationType getGLImplementation()
-  {
-    return PJOGLTestContext.makeContextWithOpenGL_ES3(true);
-  }
+  /**
+   * Construct a new text renderer.
+   *
+   * @param gi
+   *          The OpenGL implementation
+   * @param loader
+   *          A typeface loader
+   * @return A new text renderer
+   */
 
-  @Override public PTextRendererType getTextRenderer(
+  public static PTextRendererType newTextRenderer(
     final JCGLImplementationType gi,
     final PTypefaceLoaderType loader)
   {
-    return PTextRendererAWTTrivial.newTextRenderer(gi, loader);
+    return new PTextRendererAndroidActual(gi, loader);
   }
 
-  @Override public boolean isGLSupported()
+  private PTextRendererAndroid()
   {
-    return PJOGLTestContext.isOpenGLES3Supported();
-  }
-
-  @Override public PTypefaceLoaderType getTypefaceLoader()
-  {
-    return new PTypefaceLoaderAWT();
+    throw new UnreachableCodeException();
   }
 }

@@ -38,6 +38,7 @@
 
     <s:section>
       <s:section-title>Installation</s:section-title>
+
       <s:subsection>
         <s:subsection-title>Source compilation</s:subsection-title>
         <s:paragraph>
@@ -46,6 +47,43 @@
         </s:paragraph>
         <s:paragraph>
           <s:verbatim s:type="example"><![CDATA[$ mvn -C clean install]]></s:verbatim>
+        </s:paragraph>
+        <s:paragraph>
+          The project contains optional modules that will only run on
+          <s:link-external s:target="http://android.com">Android</s:link-external>.
+          These modules are not built by default. In order to instruct Maven to
+          build the optional modules, the
+          <s:term s:type="variable">io7m-build-android</s:term> profile should
+          be enabled:
+        </s:paragraph>
+        <s:paragraph>
+          <s:verbatim s:type="example"><![CDATA[$ mvn -P io7m-build-android -C clean install]]></s:verbatim>
+        </s:paragraph>
+        <s:paragraph>
+          This profile can be enabled permanently by adding it to your Maven
+          <s:term s:type="file">settings.xml</s:term>:
+        </s:paragraph>
+        <s:paragraph>
+          <s:verbatim s:type="example"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<settings
+  xmlns="http://maven.apache.org/SETTINGS/1.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <activeProfiles>
+    <activeProfile>io7m-build-android</activeProfile>
+  </activeProfiles>
+</settings>]]></s:verbatim>
+        </s:paragraph>
+        <s:paragraph>
+          Additionally, the <s:term s:type="variable">ANDROID_HOME</s:term>
+          environment variable must be set to the path of the system's Android SDK,
+          and both <s:term s:type="variable">$ANDROID_HOME/tools</s:term> and
+          <s:term s:type="variable">$ANDROID_HOME/platform-tools</s:term> must
+          be present in your environment's <s:term s:type="variable">PATH</s:term>
+          variable. Internally, the build system uses the
+          <s:link-external s:target="https://code.google.com/p/maven-android-plugin">maven-android-plugin</s:link-external>
+          with entirely default settings, so the documentation on the plugin should
+          be consulted in the case of Android-related build issues.
         </s:paragraph>
       </s:subsection>
 

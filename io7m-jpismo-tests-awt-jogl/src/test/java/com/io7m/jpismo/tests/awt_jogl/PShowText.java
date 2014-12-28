@@ -62,6 +62,7 @@ import com.io7m.jlog.LogLevel;
 import com.io7m.jlog.LogPolicyAllOn;
 import com.io7m.jlog.LogType;
 import com.io7m.jnull.NullCheck;
+import com.io7m.jpismo.PException;
 import com.io7m.jpismo.PTextAntialiasing;
 import com.io7m.jpismo.PTextBuilder;
 import com.io7m.jpismo.PTextBuilderType;
@@ -70,11 +71,13 @@ import com.io7m.jpismo.PTextRendererType;
 import com.io7m.jpismo.PTextUnmeasured;
 import com.io7m.jpismo.PTextWrapping;
 import com.io7m.jpismo.PTextureType;
+import com.io7m.jpismo.PTypefaceLoaderType;
 import com.io7m.jpismo.PTypefaceType;
 import com.io7m.jpismo.awt.PTextRendererAWTTrivial;
 import com.io7m.jtensors.MatrixM4x4F;
 import com.io7m.jtensors.VectorI3F;
 import com.io7m.jtensors.VectorM4F;
+import com.io7m.junreachable.UnimplementedCodeException;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -130,6 +133,7 @@ public final class PShowText
       private JCBExecutorType        program_rgba_np;
       private JCBExecutorType        program_rg_np;
       private JCBExecutorType        program_r;
+      private PTypefaceLoaderType    tl;
 
       @Override public void reshape(
         final GLAutoDrawable drawable,
@@ -162,10 +166,20 @@ public final class PShowText
             JCGLImplementationJOGL.newBuilder();
           gib.setStateCaching(true);
           this.gi = gib.build(context, log);
-          this.tr = PTextRendererAWTTrivial.newTextRenderer(this.gi);
+          this.tl = new PTypefaceLoaderType() {
+            @Override public PTypefaceType loadTrueType(
+              final String name)
+              throws IOException,
+                PException
+            {
+              // TODO Auto-generated method stub
+              throw new UnimplementedCodeException();
+            }
+          };
+          this.tr = PTextRendererAWTTrivial.newTextRenderer(this.gi, this.tl);
 
           final PTypefaceType face =
-            this.tr.getTypefaceLoader().getSansSerif();
+            this.tr.getTypefaceDefaults().getSansSerif();
 
           final PTextBuilderType tb = PTextBuilder.newBuilder();
           tb.setTextureType(PTextureType.TEXTURE_OPAQUE_R);

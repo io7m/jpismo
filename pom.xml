@@ -22,6 +22,54 @@
     <module>io7m-jpismo-tests</module>
   </modules>
 
+  <profiles>
+    <!-- Build all android modules if requested -->
+    <profile>
+      <id>io7m-build-android</id>
+      <activation>
+        <property>
+          <name>io7m.build-android</name>
+        </property>
+      </activation>
+      <modules>
+        <module>io7m-jpismo-android</module>
+        <module>io7m-jpismo-awt</module>
+        <module>io7m-jpismo-core</module>
+        <module>io7m-jpismo-documentation</module>
+        <module>io7m-jpismo-tests-awt-jogl</module>
+        <module>io7m-jpismo-tests</module>
+      </modules>
+    </profile>
+
+    <!-- Sign artifacts when deploying to io7m -->
+    <profile>
+      <id>io7m-deployment-private</id>
+      <activation>
+        <property>
+          <name>io7m.deployment</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -41,6 +89,9 @@
     <com.io7m.junreachable.versionRange>[1.0.0, 2.0.0)</com.io7m.junreachable.versionRange>
 
     <org.jogamp.jogl.versionRange>2.2.4</org.jogamp.jogl.versionRange>
+
+    <android.version>4.1.1.4</android.version>
+    <android.platform>16</android.platform>
 
     <siteReposDirectory>/com/io7m/jpismo</siteReposDirectory>
     <siteDocumentationDirectory>/com/io7m/jpismo/io7m-jpismo-documentation</siteDocumentationDirectory>
@@ -189,33 +240,4 @@
     </pluginManagement>
   </build>
 
-  <!-- Sign artifacts when deploying to io7m -->
-  <profiles>
-    <profile>
-      <id>io7m-deployment-private</id>
-      <activation>
-        <property>
-          <name>io7m.deployment</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.4</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

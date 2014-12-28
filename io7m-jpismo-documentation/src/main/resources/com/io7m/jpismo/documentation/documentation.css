@@ -28,7 +28,8 @@
 .file,
 .function,
 .keyword,
-.type
+.type,
+.variable
 {
   font-family: monospace;
 }
