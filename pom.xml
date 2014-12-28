@@ -25,17 +25,13 @@
   <profiles>
     <!-- Build all android modules if requested -->
     <profile>
-      <id>io7m-build-android</id>
-      <activation>
-        <property>
-          <name>io7m.build-android</name>
-        </property>
-      </activation>
+      <id>io7m-android-build</id>
       <modules>
         <module>io7m-jpismo-android</module>
         <module>io7m-jpismo-awt</module>
         <module>io7m-jpismo-core</module>
         <module>io7m-jpismo-documentation</module>
+        <module>io7m-jpismo-tests-android-jogl</module>
         <module>io7m-jpismo-tests-awt-jogl</module>
         <module>io7m-jpismo-tests</module>
       </modules>

@@ -9,10 +9,10 @@
     <artifactId>io7m-jpismo</artifactId>
     <version>0.1.0</version>
   </parent>
-  <artifactId>io7m-jpismo-android</artifactId>
+  <artifactId>io7m-jpismo-tests-android-jogl</artifactId>
 
-  <packaging>jar</packaging>
-  <description>OpenGL text rendering (Android implementation)</description>
+  <packaging>apk</packaging>
+  <description>OpenGL text rendering (Android/JOGL implementation of test contracts)</description>
   <url>http://mvn.io7m.com/${project.artifactId}/</url>
   <name>${project.artifactId}</name>
 
@@ -72,9 +72,39 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.io7m.jnull</groupId>
+      <artifactId>io7m-jnull-core</artifactId>
+      <version>${com.io7m.jnull.versionRange}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.junreachable</groupId>
+      <artifactId>io7m-junreachable-core</artifactId>
+      <version>${com.io7m.junreachable.versionRange}</version>
+    </dependency>
+
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>io7m-jpismo-core</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>io7m-jpismo-tests</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jcanephora</groupId>
+      <artifactId>io7m-jcanephora-jogl</artifactId>
+      <version>${com.io7m.jcanephora.versionRange}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jcanephora</groupId>
+      <artifactId>io7m-jcanephora-batchexec</artifactId>
+      <version>${com.io7m.jcanephora.versionRange}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -83,20 +113,43 @@
       <version>${android.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.9.9-RC2</version>
-      <scope>test</scope>
+      <groupId>com.google.android</groupId>
+      <artifactId>android-test</artifactId>
+      <version>${android.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <!-- Sign artifacts when deploying to io7m -->
+    <profile>
+      <id>io7m-deployment-private</id>
+      <activation>
+        <property>
+          <name>io7m.deployment</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <build>
     <!-- Allow deployment over ssh -->
@@ -131,17 +184,25 @@
         <version>2.6</version>
       </plugin>
 
-      <!-- Use Android plugin -->
+      <!-- Use Android plugin to run tests. -->
       <plugin>
         <groupId>com.simpligility.maven.plugins</groupId>
         <artifactId>android-maven-plugin</artifactId>
         <version>4.0.0</version>
         <configuration>
+          <!-- It's necessary to set these manually as Eclipse wants them -->
+          <!-- in the project root, but the plugin wants them in src/main -->
+          <androidManifestFile>AndroidManifest.xml</androidManifestFile>
+          <resourceDirectory>res</resourceDirectory>
+          <genDirectory>gen</genDirectory>
           <sdk>
             <path>${env.ANDROID_HOME}</path>
             <platform>${android.platform}</platform>
           </sdk>
           <undeployBeforeDeploy>true</undeployBeforeDeploy>
+          <test>
+            <createReport>true</createReport>
+          </test>
         </configuration>
         <extensions>true</extensions>
       </plugin>
@@ -162,42 +223,26 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.4</version>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Specification-Title>${project.name}</Specification-Title>
-              <Specification-Version>${project.version}</Specification-Version>
-              <Specification-Vendor>io7m.com</Specification-Vendor>
-              <Implementation-Title>${project.name}</Implementation-Title>
-              <Implementation-Version>${project.version}</Implementation-Version>
-              <Implementation-Vendor>io7m.com</Implementation-Vendor>
-              <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
-              <Built-By>io7m</Built-By>
-              <Sealed>true</Sealed>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <!-- Check style -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.11</version>
         <executions>
           <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <configuration>
-              <configLocation>../checkstyle.xml</configLocation>
-              <encoding>UTF-8</encoding>
-              <consoleOutput>true</consoleOutput>
-              <failsOnError>true</failsOnError>
-              <linkXRef>false</linkXRef>
-            </configuration>
             <goals>
-              <goal>check</goal>
+              <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Specification-Title>${project.name}</Specification-Title>
+                  <Specification-Version>${project.version}</Specification-Version>
+                  <Specification-Vendor>io7m.com</Specification-Vendor>
+                  <Implementation-Title>${project.name}</Implementation-Title>
+                  <Implementation-Version>${project.version}</Implementation-Version>
+                  <Implementation-Vendor>io7m.com</Implementation-Vendor>
+                  <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
+                  <Built-By>io7m</Built-By>
+                  <Sealed>true</Sealed>
+                </manifestEntries>
+              </archive>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -263,6 +308,16 @@
         </executions>
       </plugin>
 
+      <!-- Tell the surefire plugin to redirect test output -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.15</version>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+
       <!-- Enable code coverage for unit tests -->
       <plugin>
         <groupId>org.sonatype.maven.plugin</groupId>
@@ -278,36 +333,38 @@
         </executions>
       </plugin>
     </plugins>
-  </build>
 
-  <!-- Sign artifacts when deploying to io7m -->
-  <profiles>
-    <profile>
-      <id>io7m-deployment-private</id>
-      <activation>
-        <property>
-          <name>io7m.deployment</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.4</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+    <!-- Mark certain plugins as ignored in Eclipse. Does not affect the build. -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.simpligility.maven.plugins</groupId>
+                    <artifactId>android-maven-plugin</artifactId>
+                    <versionRange>[4.0.0,)</versionRange>
+                    <goals>
+                      <goal>generate-sources</goal>
+                      <goal>emma</goal>
+                      <goal>proguard</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>

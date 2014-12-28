@@ -48,16 +48,20 @@
         <s:paragraph>
           <s:verbatim s:type="example"><![CDATA[$ mvn -C clean install]]></s:verbatim>
         </s:paragraph>
+      </s:subsection>
+
+      <s:subsection>
+        <s:subsection-title>Source compilation (Android, optional)</s:subsection-title>
         <s:paragraph>
           The project contains optional modules that will only run on
           <s:link-external s:target="http://android.com">Android</s:link-external>.
           These modules are not built by default. In order to instruct Maven to
           build the optional modules, the
-          <s:term s:type="variable">io7m-build-android</s:term> profile should
+          <s:term s:type="variable">io7m-android-build</s:term> profile should
           be enabled:
         </s:paragraph>
         <s:paragraph>
-          <s:verbatim s:type="example"><![CDATA[$ mvn -P io7m-build-android -C clean install]]></s:verbatim>
+          <s:verbatim s:type="example"><![CDATA[$ mvn -P io7m-android-build -C clean install]]></s:verbatim>
         </s:paragraph>
         <s:paragraph>
           This profile can be enabled permanently by adding it to your Maven
@@ -70,7 +74,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
   <activeProfiles>
-    <activeProfile>io7m-build-android</activeProfile>
+    <activeProfile>io7m-android-build</activeProfile>
   </activeProfiles>
 </settings>]]></s:verbatim>
         </s:paragraph>
@@ -84,6 +88,24 @@
           <s:link-external s:target="https://code.google.com/p/maven-android-plugin">maven-android-plugin</s:link-external>
           with entirely default settings, so the documentation on the plugin should
           be consulted in the case of Android-related build issues.
+        </s:paragraph>
+        <s:paragraph>
+          The project contains unit tests that will optionally be executed
+          if the <s:term s:type="variable">io7m-android-test</s:term> profile
+          is enabled. This requires use of either the AVD emulator, or a real
+          Android device. The device named by the <s:term s:type="variable">android.device</s:term>
+          property is the one that will be used by the test suite:
+        </s:paragraph>
+        <s:paragraph>
+          <s:verbatim s:type="example"><![CDATA[$ mvn -P io7m-android-build,io7m-android-test -Dandroid.device=device123 -C clean install]]></s:verbatim>
+        </s:paragraph>
+        <s:paragraph>
+          As per the documentation on the Maven Android plugin, the
+          <s:term s:type="variable">android.device</s:term> property may be
+          set to <s:term s:type="constant">usb</s:term> if there is exactly
+          one device attached via USB, <s:term s:type="constant">emulator</s:term>
+          if there is exactly one emulated device running, or
+          the name of a specific device, emulated or otherwise.
         </s:paragraph>
       </s:subsection>
 
