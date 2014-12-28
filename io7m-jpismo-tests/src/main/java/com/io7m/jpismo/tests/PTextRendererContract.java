@@ -32,8 +32,9 @@ import com.io7m.jpismo.PTextRendererType;
 import com.io7m.jpismo.PTextUnmeasured;
 import com.io7m.jpismo.PTextWrapping;
 import com.io7m.jpismo.PTextureType;
+import com.io7m.jpismo.PTypefaceDefaultsType;
+import com.io7m.jpismo.PTypefaceLoaderType;
 import com.io7m.jpismo.PTypefaceType;
-import com.io7m.jpismo.PTypefacesLoaderType;
 
 // CHECKSTYLE_JAVADOC:OFF
 
@@ -42,8 +43,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testFontDefault()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getDefault();
     Assert.assertNotNull(f);
   }
@@ -51,8 +53,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testFontMonospace()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getMonospace();
     Assert.assertNotNull(f);
   }
@@ -60,8 +63,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testFontSansSerif()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSansSerif();
     Assert.assertNotNull(f);
   }
@@ -69,8 +73,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testFontSerif()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
     Assert.assertNotNull(f);
   }
@@ -78,8 +83,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testMeasure0()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -109,8 +115,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileMeasured0()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -155,8 +162,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileMeasured1()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -200,8 +208,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileMeasured2()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -245,8 +254,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileMeasured3()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -291,8 +301,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileUnmeasured0()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -325,8 +336,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileUnmeasured1()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -358,8 +370,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileUnmeasured2()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -391,8 +404,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
   @Test public final void testCompileUnmeasuredHard0()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();
@@ -426,8 +440,9 @@ public abstract class PTextRendererContract extends PAbstractTestContract
     testCompileDeleted0()
   {
     final JCGLImplementationType g = this.getGLImplementation();
-    final PTextRendererType r = this.getTextRenderer(g);
-    final PTypefacesLoaderType fl = r.getTypefaceLoader();
+    final PTypefaceLoaderType tl = this.getTypefaceLoader();
+    final PTextRendererType r = this.getTextRenderer(g, tl);
+    final PTypefaceDefaultsType fl = r.getTypefaceDefaults();
     final PTypefaceType f = fl.getSerif();
 
     final PTextBuilderType tb = PTextBuilder.newBuilder();

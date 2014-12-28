@@ -18,7 +18,6 @@ package com.io7m.jpismo.awt;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
@@ -27,8 +26,6 @@ import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
@@ -69,16 +66,15 @@ import com.io7m.jcanephora.api.JCGLInterfaceGLES3Type;
 import com.io7m.jcanephora.api.JCGLTextures2DStaticGL3ES3Type;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
-import com.io7m.jpismo.PException;
-import com.io7m.jpismo.PExceptionTypefaceFormat;
 import com.io7m.jpismo.PTextCompiledType;
 import com.io7m.jpismo.PTextMeasuredType;
 import com.io7m.jpismo.PTextRendererType;
 import com.io7m.jpismo.PTextUnmeasured;
 import com.io7m.jpismo.PTextWrapping;
 import com.io7m.jpismo.PTextureType;
+import com.io7m.jpismo.PTypefaceDefaultsType;
+import com.io7m.jpismo.PTypefaceLoaderType;
 import com.io7m.jpismo.PTypefaceType;
-import com.io7m.jpismo.PTypefacesLoaderType;
 import com.io7m.jtensors.VectorM2F;
 import com.io7m.jtensors.VectorM4F;
 import com.io7m.jtensors.VectorReadable2FType;
@@ -86,7 +82,7 @@ import com.io7m.junreachable.UnreachableCodeException;
 
 @SuppressWarnings("synthetic-access") @EqualityReference final class PTextRendererAWTTrivialActual implements
   PTextRendererType,
-  PTypefacesLoaderType
+  PTypefaceDefaultsType
 {
   private static final PTypefaceType TYPEFACE_DEFAULT;
   private static final PTypefaceType TYPEFACE_MONOSPACED;
@@ -671,11 +667,15 @@ import com.io7m.junreachable.UnreachableCodeException;
   private final Graphics2D             scratch_g;
   private final VectorM2F              size;
   private final ArrayDescriptor        type;
+  private final PTypefaceLoaderType    loader;
 
   PTextRendererAWTTrivialActual(
-    final JCGLImplementationType in_gi)
+    final JCGLImplementationType in_gi,
+    final PTypefaceLoaderType in_loader)
   {
     this.gi = NullCheck.notNull(in_gi, "OpenGL implementation");
+    this.loader = NullCheck.notNull(in_loader, "Loader");
+
     this.scratch = new BufferedImage(2, 2, BufferedImage.TYPE_4BYTE_ABGR);
     this.scratch_g = NullCheck.notNull(this.scratch.createGraphics());
     this.size = new VectorM2F();
@@ -914,30 +914,6 @@ import com.io7m.junreachable.UnreachableCodeException;
     return PTextRendererAWTTrivialActual.TYPEFACE_SERIF;
   }
 
-  @Override public PTypefacesLoaderType getTypefaceLoader()
-  {
-    return this;
-  }
-
-  @Override public PTypefaceType loadTrueTypeFromStream(
-    final String name,
-    final InputStream s)
-    throws IOException,
-      PException
-  {
-    NullCheck.notNull(name, "Name");
-    NullCheck.notNull(s, "Stream");
-
-    try {
-      assert s != null;
-      final Font f =
-        NullCheck.notNull(Font.createFont(Font.TRUETYPE_FONT, s));
-      return new PTypefaceAWT(f);
-    } catch (final FontFormatException e) {
-      throw new PExceptionTypefaceFormat(e, NullCheck.notNull(e.getMessage()));
-    }
-  }
-
   @Override public PTextMeasuredType measureText(
     final PTextUnmeasured text)
   {
@@ -982,5 +958,15 @@ import com.io7m.junreachable.UnreachableCodeException;
   private BigInteger nextID()
   {
     return NullCheck.notNull(this.id.add(BigInteger.ONE));
+  }
+
+  @Override public PTypefaceDefaultsType getTypefaceDefaults()
+  {
+    return this;
+  }
+
+  @Override public PTypefaceLoaderType getTypefaceLoader()
+  {
+    return this.loader;
   }
 }
