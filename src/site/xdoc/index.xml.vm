@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document
+  xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>${project.name}</title>
+  </properties>
+
+  <body>
+    <subsection name="${project.name}">
+      <p>
+        The <b>${project.name}</b> package implements a set of simple algorithms
+        for aligning and justifying plain text.
+      </p>
+      <p>
+        <pre>
+Pellentesque   mauris  lectus,  facilisis  at  rhoncus  non,
+efficitur  at  lorem.  Nulla  nisl  elit,  gravida ultricies
+magna  ac,  molestie  gravida  ipsum.  Pellentesque sagittis
+dapibus  tellus  vel  dictum. Donec ullamcorper mattis purus
+in  molestie.  Aenean  vel diam imperdiet, interdum eros in,
+rhoncus  ipsum.  Donec  sit  amet  convallis  tellus.  Morbi
+gravida  arcu  quis nisl fermentum, sed dapibus dui aliquet.
+Sed  congue,  nibh  sit  amet  ultrices  rutrum,  nisi  nunc
+posuere   quam,   at   ullamcorper   eros  metus  eu  lorem.
+        </pre>
+      </p>
+      <p>
+        <pre>
+Pellentesque mauris lectus, facilisis at rhoncus non,
+efficitur at lorem. Nulla nisl elit, gravida ultricies
+magna ac, molestie gravida ipsum. Pellentesque sagittis
+dapibus tellus vel dictum. Donec ullamcorper mattis purus
+in molestie. Aenean vel diam imperdiet, interdum eros in,
+rhoncus ipsum. Donec sit amet convallis tellus. Morbi
+gravida arcu quis nisl fermentum, sed dapibus dui aliquet.
+Sed congue, nibh sit amet ultrices rutrum, nisi nunc
+posuere quam, at ullamcorper eros metus eu lorem.
+        </pre>
+      </p>
+    </subsection>
+    <subsection name="Features">
+      <ul>
+        <li>Full justification (flush left, flush right).</li>
+        <li>Left alignment (flush left, ragged right).</li>
+        <li>Full unit test coverage (100.0%).</li>
+        <li>ISC license.</li>
+      </ul>
+    </subsection>
+  </body>
+
+</document>

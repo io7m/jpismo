@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,32 +16,31 @@
 
 package com.io7m.jpismo.tests;
 
-import org.junit.Assume;
-import org.junit.Before;
-
-import com.io7m.jcanephora.api.JCGLImplementationType;
+import com.io7m.jcanephora.core.api.JCGLContextUsableType;
 import com.io7m.jpismo.PTextRendererType;
 import com.io7m.jpismo.PTypefaceLoaderType;
+import org.junit.After;
 
 // CHECKSTYLE_JAVADOC:OFF
 
 public abstract class PAbstractTestContract implements TestContractType
 {
-  public PAbstractTestContract()
+  protected PAbstractTestContract()
   {
     super();
   }
 
-  @Before public final void checkSupport()
-  {
-    Assume.assumeTrue(this.isGLSupported());
-  }
+  protected abstract JCGLContextUsableType newContext(
+    String name,
+    int depth,
+    int stencil);
 
-  public abstract JCGLImplementationType getGLImplementation();
+  protected abstract PTypefaceLoaderType getTypefaceLoader();
 
-  public abstract PTypefaceLoaderType getTypefaceLoader();
-
-  public abstract PTextRendererType getTextRenderer(
-    final JCGLImplementationType gi,
+  protected abstract PTextRendererType getTextRenderer(
+    final JCGLContextUsableType gc,
     final PTypefaceLoaderType loader);
+
+  @After
+  public abstract void onTestCompleted();
 }

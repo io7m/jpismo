@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,10 +16,9 @@
 
 package com.io7m.jpismo.tests;
 
+import com.io7m.jpismo.PTypefaceType;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.generator.support.StringGenerator;
-
-import com.io7m.jpismo.PTypefaceType;
 
 /**
  * Typeface generator.
@@ -38,14 +37,9 @@ public final class PTypefaceGenerator implements Generator<PTypefaceType>
     this.string_gen = new StringGenerator();
   }
 
-  @Override public PTypefaceType next()
+  @Override
+  public PTypefaceType next()
   {
-    final String name = this.string_gen.next();
-    return new PTypefaceType() {
-      @Override public String getName()
-      {
-        return name;
-      }
-    };
+    return () -> this.string_gen.next();
   }
 }

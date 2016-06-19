@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,8 +16,8 @@
 
 package com.io7m.jpismo;
 
-import com.io7m.jcanephora.TextureFilterMagnification;
-import com.io7m.jcanephora.TextureFilterMinification;
+import com.io7m.jcanephora.core.JCGLTextureFilterMagnification;
+import com.io7m.jcanephora.core.JCGLTextureFilterMinification;
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jranges.RangeCheck;
@@ -26,9 +26,23 @@ import com.io7m.jranges.RangeCheck;
  * The main {@link PTextBuilderType} implementation.
  */
 
-@EqualityReference public final class PTextBuilder implements
-  PTextBuilderType
+@EqualityReference
+public final class PTextBuilder implements PTextBuilderType
 {
+  private PTextAntialiasing anti;
+  private float font_size;
+  private JCGLTextureFilterMinification min;
+  private JCGLTextureFilterMagnification mag;
+  private PTextureType ttype;
+  private PTextBuilder()
+  {
+    this.anti = PTextAntialiasing.TEXT_ANTIALIASING_FAST;
+    this.min =
+      JCGLTextureFilterMinification.TEXTURE_FILTER_NEAREST_MIPMAP_NEAREST;
+    this.mag = JCGLTextureFilterMagnification.TEXTURE_FILTER_NEAREST;
+    this.ttype = PTextureType.TEXTURE_TRANSLUCENT_RGBA_NON_PREMULTIPLIED;
+  }
+
   /**
    * @return A new text builder
    */
@@ -38,40 +52,29 @@ import com.io7m.jranges.RangeCheck;
     return new PTextBuilder();
   }
 
-  private PTextAntialiasing          anti;
-  private float                      font_size;
-  private TextureFilterMinification  min;
-  private TextureFilterMagnification mag;
-  private PTextureType               ttype;
-
-  private PTextBuilder()
-  {
-    this.anti = PTextAntialiasing.TEXT_ANTIALIASING_FAST;
-    this.min =
-      TextureFilterMinification.TEXTURE_FILTER_NEAREST_MIPMAP_NEAREST;
-    this.mag = TextureFilterMagnification.TEXTURE_FILTER_NEAREST;
-    this.ttype = PTextureType.TEXTURE_TRANSLUCENT_RGBA_NON_PREMULTIPLIED;
-  }
-
-  @Override public void setAntialiasingMode(
+  @Override
+  public void setAntialiasingMode(
     final PTextAntialiasing in_anti)
   {
     this.anti = NullCheck.notNull(in_anti, "Antialiasing");
   }
 
-  @Override public void setMinificationFilter(
-    final TextureFilterMinification f)
+  @Override
+  public void setMinificationFilter(
+    final JCGLTextureFilterMinification f)
   {
     this.min = NullCheck.notNull(f, "Filter");
   }
 
-  @Override public void setMagnificationFilter(
-    final TextureFilterMagnification f)
+  @Override
+  public void setMagnificationFilter(
+    final JCGLTextureFilterMagnification f)
   {
     this.mag = NullCheck.notNull(f, "Filter");
   }
 
-  @Override public PTextUnmeasured buildText(
+  @Override
+  public PTextUnmeasuredType buildText(
     final PTypefaceType in_face,
     final float in_font_size,
     final String in_text,
@@ -92,19 +95,20 @@ import com.io7m.jranges.RangeCheck;
       0.0,
       "Minimum wrapping width");
 
-    return PTextUnmeasured.newText(
+    return PTextUnmeasured.of(
+      this.anti,
       in_face,
       in_font_size,
+      this.mag,
+      this.min,
       in_wrap_mode,
       in_text,
-      in_wrap_width,
-      this.anti,
-      this.min,
-      this.mag,
-      this.ttype);
+      this.ttype,
+      in_wrap_width);
   }
 
-  @Override public void setTextureType(
+  @Override
+  public void setTextureType(
     final PTextureType t)
   {
     this.ttype = NullCheck.notNull(t, "Type");

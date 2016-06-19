@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,22 +16,23 @@
 
 package com.io7m.jpismo.awt;
 
-import java.text.AttributedString;
-
 import com.io7m.jequality.annotations.EqualityReference;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jpismo.PTextMeasuredType;
-import com.io7m.jpismo.PTextUnmeasured;
+import com.io7m.jpismo.PTextUnmeasuredType;
 
-@EqualityReference final class PTextMeasuredAWT implements PTextMeasuredType
+import java.text.AttributedString;
+
+@EqualityReference
+final class PTextMeasuredAWT implements PTextMeasuredType
 {
   private final AttributedString attr_text;
-  private final float            max_height;
-  private final float            max_width;
-  private final PTextUnmeasured  text;
+  private final float max_height;
+  private final float max_width;
+  private final PTextUnmeasuredType text;
 
   PTextMeasuredAWT(
-    final PTextUnmeasured in_text,
+    final PTextUnmeasuredType in_text,
     final AttributedString in_attr_text,
     final float in_max_width,
     final float in_max_height)
@@ -42,22 +43,26 @@ import com.io7m.jpismo.PTextUnmeasured;
     this.max_height = in_max_height;
   }
 
-  @Override public float textGetHeight()
+  @Override
+  public float textGetHeight()
   {
     return this.max_height;
   }
 
-  @Override public PTextUnmeasured textGetUnmeasured()
+  @Override
+  public PTextUnmeasuredType textGetUnmeasured()
   {
     return this.text;
   }
 
-  @Override public float textGetWidth()
+  @Override
+  public float textGetWidth()
   {
     return this.max_width;
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append("[PTextMeasuredAWT attr_text=");

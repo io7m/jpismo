@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,12 +16,11 @@
 
 package com.io7m.jpismo;
 
-import com.io7m.jcanephora.ArrayBufferUsableType;
-import com.io7m.jcanephora.IndexBufferUsableType;
-import com.io7m.jcanephora.JCGLException;
-import com.io7m.jcanephora.JCGLResourceUsableType;
-import com.io7m.jcanephora.Texture2DStaticUsableType;
-import com.io7m.jcanephora.api.JCGLImplementationType;
+import com.io7m.jcanephora.core.JCGLArrayObjectUsableType;
+import com.io7m.jcanephora.core.JCGLException;
+import com.io7m.jcanephora.core.JCGLResourceUsableType;
+import com.io7m.jcanephora.core.JCGLTexture2DUsableType;
+import com.io7m.jcanephora.core.api.JCGLInterfaceGL33Type;
 
 /**
  * The type of compiled text.
@@ -32,23 +31,22 @@ public interface PTextCompiledType extends JCGLResourceUsableType
   /**
    * Delete all resources associated with the compiled text.
    *
-   * @param gi
-   *          The OpenGL implementation
-   * @throws JCGLException
-   *           On OpenGL errors
+   * @param gi The OpenGL implementation
+   *
+   * @throws JCGLException On OpenGL errors
    */
 
   void textDelete(
-    final JCGLImplementationType gi)
+    final JCGLInterfaceGL33Type gi)
     throws JCGLException;
 
   /**
-   * @param index
-   *          The page index
-   * @return The array buffer for page <code>index</code>
+   * @param index The page index
+   *
+   * @return The array object for page {@code index}
    */
 
-  ArrayBufferUsableType textGetArrayBuffer(
+  JCGLArrayObjectUsableType textGetArrayObject(
     int index);
 
   /**
@@ -58,27 +56,18 @@ public interface PTextCompiledType extends JCGLResourceUsableType
   float textGetHeight();
 
   /**
-   * @param index
-   *          The page index
-   * @return The index buffer for page <code>index</code>
-   */
-
-  IndexBufferUsableType textGetIndexBuffer(
-    int index);
-
-  /**
    * @return The number of pages used to represent the compiled text
    */
 
   int textGetPageCount();
 
   /**
-   * @param index
-   *          The page index
-   * @return The texture for page <code>index</code>
+   * @param index The page index
+   *
+   * @return The texture for page {@code index}
    */
 
-  Texture2DStaticUsableType textGetTexture(
+  JCGLTexture2DUsableType textGetTexture(
     int index);
 
   /**
@@ -88,8 +77,8 @@ public interface PTextCompiledType extends JCGLResourceUsableType
   float textGetWidth();
 
   /**
-   * @return The texture type that was used by the renderer; may differ from
-   *         the requested type depending on the underlying OpenGL version
+   * @return The texture type that was used by the renderer; may differ from the
+   * requested type depending on the underlying OpenGL version
    */
 
   PTextureType textGetActualTextureType();

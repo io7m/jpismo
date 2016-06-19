@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -27,18 +27,16 @@ public interface PTypefaceLoaderType
   /**
    * Load what is assumed to be a TrueType typeface with the given name.
    *
-   * @param name
-   *          The name of the typeface to be loaded
+   * @param name The name of the typeface to be loaded
    *
    * @return A loaded typeface
-   * @throws IOException
-   *           On I/O errors
-   * @throws PException
-   *           On other errors
+   *
+   * @throws IOException On I/O errors
+   * @throws PException  On other errors
    */
 
   PTypefaceType loadTrueType(
     String name)
     throws IOException,
-      PException;
+    PException;
 }

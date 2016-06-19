@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -23,45 +23,31 @@ package com.io7m.jpismo;
 public enum PTextureType
 {
   /**
-   * <p>
-   * Produce an RGBA texture as output. The text color (white) will be given
-   * in the <code>(r, g, b)</code> channels, and the opacity in <code>a</code>
-   * .
-   * </p>
-   * <p>
-   * It is assumed that the texture will be used in a context that demands a
-   * "translucent" image. In other words, it will be rendered using some form
-   * of blending.
-   * </p>
+   * <p> Produce an RGBA texture as output. The text color (white) will be given
+   * in the <code>(r, g, b)</code> channels, and the opacity in <code>a</code> .
+   * </p> <p> It is assumed that the texture will be used in a context that
+   * demands a "translucent" image. In other words, it will be rendered using
+   * some form of blending. </p>
    */
 
   TEXTURE_TRANSLUCENT_RGBA_NON_PREMULTIPLIED,
 
   /**
-   * <p>
-   * Produce an RG texture as output. The text color (white) is given as a
+   * <p> Produce an RG texture as output. The text color (white) is given as a
    * single intensity value in the <code>r</code> channel, and the opacity in
-   * <code>g</code>.
-   * </p>
-   * <p>
-   * It is assumed that the texture will be used in a context that demands a
-   * "translucent" image. In other words, it will be rendered using some form
-   * of blending.
-   * </p>
+   * <code>g</code>. </p> <p> It is assumed that the texture will be used in a
+   * context that demands a "translucent" image. In other words, it will be
+   * rendered using some form of blending. </p>
    */
 
   TEXTURE_TRANSLUCENT_RG_NON_PREMULTIPLIED,
 
   /**
-   * <p>
-   * Produce an R texture as output. The text color is given as a single
-   * intensity value in the <code>r</code> channel.
-   * </p>
-   * <p>
-   * It is assumed that the texture will be used in a context that demands an
-   * "opaque" image. In other words, it will be rendered without any kind of
-   * blending (alpha, or otherwise).
-   * </p>
+   * <p> Produce an R texture as output. The text color is given as a single
+   * intensity value in the <code>r</code> channel. </p> <p> It is assumed that
+   * the texture will be used in a context that demands an "opaque" image. In
+   * other words, it will be rendered without any kind of blending (alpha, or
+   * otherwise). </p>
    */
 
   TEXTURE_OPAQUE_R

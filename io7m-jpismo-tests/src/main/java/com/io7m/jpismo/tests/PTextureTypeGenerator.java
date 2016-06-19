@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,10 +16,9 @@
 
 package com.io7m.jpismo.tests;
 
-import net.java.quickcheck.Generator;
-
 import com.io7m.jnull.NullCheck;
 import com.io7m.jpismo.PTextureType;
+import net.java.quickcheck.Generator;
 
 /**
  * Generator for texture types.
@@ -36,7 +35,8 @@ public final class PTextureTypeGenerator implements Generator<PTextureType>
 
   }
 
-  @Override public PTextureType next()
+  @Override
+  public PTextureType next()
   {
     final PTextureType[] v = PTextureType.values();
     final int index = (int) (Math.random() * v.length);

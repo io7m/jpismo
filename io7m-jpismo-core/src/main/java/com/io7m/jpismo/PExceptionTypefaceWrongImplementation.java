@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -19,12 +19,18 @@ package com.io7m.jpismo;
 import com.io7m.jnull.NullCheck;
 
 /**
- * The type of exceptions raised by attempting to use a font that was loaded
- * on one implementation on another.
+ * The type of exceptions raised by attempting to use a font that was loaded on
+ * one implementation on another.
  */
 
 public final class PExceptionTypefaceWrongImplementation extends PException
 {
+  private static final long serialVersionUID;
+
+  static {
+    serialVersionUID = 5328139766524195605L;
+  }
+
   private PExceptionTypefaceWrongImplementation(
     final String message)
   {
@@ -34,28 +40,22 @@ public final class PExceptionTypefaceWrongImplementation extends PException
   /**
    * Construct an exception from the given typeface.
    *
-   * @param face
-   *          The typeface
+   * @param face The typeface
+   *
    * @return An exception
    */
 
   public static PExceptionTypefaceWrongImplementation wrongImplementation(
     final PTypefaceType face)
   {
-    final StringBuilder b = new StringBuilder();
-    b
-      .append("Attempted to use a loaded typeface on the wrong implementation.\n");
+    final StringBuilder b = new StringBuilder(128);
+    b.append("Attempted to use a loaded typeface on the wrong implementation.");
+    b.append(System.lineSeparator());
     b.append("  Typeface: ");
     b.append(face);
-    b.append("\n");
+    b.append(System.lineSeparator());
     final String s = NullCheck.notNull(b.toString());
     return new PExceptionTypefaceWrongImplementation(s);
-  }
-
-  private static final long serialVersionUID;
-
-  static {
-    serialVersionUID = 5328139766524195605L;
   }
 
 }

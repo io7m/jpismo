@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -40,8 +40,7 @@ public abstract class PException extends RuntimeException
   /**
    * Construct an exception.
    *
-   * @param message
-   *          The message
+   * @param message The message
    */
 
   public PException(
@@ -53,10 +52,8 @@ public abstract class PException extends RuntimeException
   /**
    * Construct an exception.
    *
-   * @param message
-   *          The message
-   * @param cause
-   *          The cause
+   * @param message The message
+   * @param cause   The cause
    */
 
   public PException(
@@ -69,8 +66,7 @@ public abstract class PException extends RuntimeException
   /**
    * Construct an exception.
    *
-   * @param cause
-   *          The cause
+   * @param cause The cause
    */
 
   public PException(
@@ -80,8 +76,9 @@ public abstract class PException extends RuntimeException
   }
 
   // CHECKSTYLE:OFF
-  @Override protected final void finalize()
-    // CHECKSTYLE:ON
+  @Override
+  protected final void finalize()
+  // CHECKSTYLE:ON
     throws Throwable
   {
     // Empty finalizer to prevent attacks on the implementation.

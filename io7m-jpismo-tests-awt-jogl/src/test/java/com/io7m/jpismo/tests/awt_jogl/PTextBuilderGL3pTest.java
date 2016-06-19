@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,7 +16,7 @@
 
 package com.io7m.jpismo.tests.awt_jogl;
 
-import com.io7m.jcanephora.api.JCGLImplementationType;
+import com.io7m.jcanephora.core.api.JCGLContextUsableType;
 import com.io7m.jpismo.PTextRendererType;
 import com.io7m.jpismo.PTypefaceLoaderType;
 import com.io7m.jpismo.awt.PTextRendererAWTTrivial;
@@ -24,25 +24,32 @@ import com.io7m.jpismo.tests.PTextBuilderContract;
 
 public final class PTextBuilderGL3pTest extends PTextBuilderContract
 {
-  @Override public JCGLImplementationType getGLImplementation()
+  @Override
+  protected JCGLContextUsableType newContext(
+    final String name,
+    final int depth,
+    final int stencil)
   {
-    return PJOGLTestContext.makeContextWithOpenGL3_p(true);
+    return PJOGLTestContexts.newGL33Context(name, depth, stencil);
   }
 
-  @Override public PTextRendererType getTextRenderer(
-    final JCGLImplementationType gi,
-    final PTypefaceLoaderType loader)
-  {
-    return PTextRendererAWTTrivial.newTextRenderer(gi, loader);
-  }
-
-  @Override public boolean isGLSupported()
-  {
-    return PJOGLTestContext.isOpenGL3pSupported();
-  }
-
-  @Override public PTypefaceLoaderType getTypefaceLoader()
+  @Override
+  public PTypefaceLoaderType getTypefaceLoader()
   {
     return new PTypefaceLoaderAWT();
+  }
+
+  @Override
+  protected PTextRendererType getTextRenderer(
+    final JCGLContextUsableType gc,
+    final PTypefaceLoaderType loader)
+  {
+    return PTextRendererAWTTrivial.create(loader);
+  }
+
+  @Override
+  public void onTestCompleted()
+  {
+    PJOGLTestContexts.closeAllContexts();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  * 
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,27 +16,17 @@
 
 package com.io7m.jpismo.awt;
 
-import java.awt.Font;
-
 import com.io7m.jequality.annotations.EqualityStructural;
 import com.io7m.jnull.NullCheck;
 import com.io7m.jnull.Nullable;
 import com.io7m.jpismo.PExceptionTypefaceWrongImplementation;
 import com.io7m.jpismo.PTypefaceType;
 
-@EqualityStructural final class PTypefaceAWT implements PTypefaceType
-{
-  static PTypefaceAWT checkFace(
-    final PTypefaceType face_raw)
-  {
-    if ((face_raw instanceof PTypefaceAWT) == false) {
-      throw PExceptionTypefaceWrongImplementation
-        .wrongImplementation(face_raw);
-    }
-    final PTypefaceAWT face = (PTypefaceAWT) face_raw;
-    return face;
-  }
+import java.awt.Font;
 
+@EqualityStructural
+final class PTypefaceAWT implements PTypefaceType
+{
   private final Font font;
 
   PTypefaceAWT(
@@ -45,7 +35,19 @@ import com.io7m.jpismo.PTypefaceType;
     this.font = NullCheck.notNull(in_font);
   }
 
-  @Override public boolean equals(
+  static PTypefaceAWT checkFace(
+    final PTypefaceType face_raw)
+  {
+    if (!(face_raw instanceof PTypefaceAWT)) {
+      throw PExceptionTypefaceWrongImplementation
+        .wrongImplementation(face_raw);
+    }
+    final PTypefaceAWT face = (PTypefaceAWT) face_raw;
+    return face;
+  }
+
+  @Override
+  public boolean equals(
     final @Nullable Object obj)
   {
     if (this == obj) {
@@ -66,17 +68,20 @@ import com.io7m.jpismo.PTypefaceType;
     return this.font;
   }
 
-  @Override public String getName()
+  @Override
+  public String getName()
   {
     return NullCheck.notNull(this.font.getFamily());
   }
 
-  @Override public int hashCode()
+  @Override
+  public int hashCode()
   {
     return this.font.hashCode();
   }
 
-  @Override public String toString()
+  @Override
+  public String toString()
   {
     final StringBuilder builder = new StringBuilder();
     builder.append("[PTypefaceAWT font=");

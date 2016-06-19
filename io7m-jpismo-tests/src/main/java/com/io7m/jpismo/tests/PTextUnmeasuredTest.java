@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 <code@io7m.com> http://io7m.com
+ * Copyright © 2016 <code@io7m.com> http://io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -16,24 +16,23 @@
 
 package com.io7m.jpismo.tests;
 
+import com.io7m.jcanephora.core.JCGLTextureFilterMagnification;
+import com.io7m.jcanephora.core.JCGLTextureFilterMinification;
+import com.io7m.jnull.Nullable;
+import com.io7m.jpismo.PTextAntialiasing;
+import com.io7m.jpismo.PTextUnmeasured;
+import com.io7m.jpismo.PTextUnmeasuredType;
+import com.io7m.jpismo.PTextWrapping;
+import com.io7m.jpismo.PTextureType;
+import com.io7m.jpismo.PTypefaceType;
 import net.java.quickcheck.Generator;
 import net.java.quickcheck.QuickCheck;
 import net.java.quickcheck.characteristic.AbstractCharacteristic;
 import net.java.quickcheck.generator.support.CharacterGenerator;
 import net.java.quickcheck.generator.support.IntegerGenerator;
 import net.java.quickcheck.generator.support.StringGenerator;
-
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.io7m.jcanephora.TextureFilterMagnification;
-import com.io7m.jcanephora.TextureFilterMinification;
-import com.io7m.jnull.Nullable;
-import com.io7m.jpismo.PTextAntialiasing;
-import com.io7m.jpismo.PTextUnmeasured;
-import com.io7m.jpismo.PTextWrapping;
-import com.io7m.jpismo.PTextureType;
-import com.io7m.jpismo.PTypefaceType;
 
 /**
  * Unmeasured text.
@@ -41,14 +40,16 @@ import com.io7m.jpismo.PTypefaceType;
 
 // CHECKSTYLE_JAVADOC:OFF
 
-@SuppressWarnings("static-method") public final class PTextUnmeasuredTest
+@SuppressWarnings("static-method")
+public final class PTextUnmeasuredTest
 {
   public PTextUnmeasuredTest()
   {
 
   }
 
-  @Test public void testEquals()
+  @Test
+  public void testEquals()
   {
     final Generator<PTypefaceType> in_face_gen = new PTypefaceGenerator();
     final Generator<PTextWrapping> in_wrap_gen = new PTextWrappingGenerator();
@@ -58,10 +59,10 @@ import com.io7m.jpismo.PTypefaceType;
       new StringGenerator(length_gen, char_gen);
     final Generator<PTextAntialiasing> in_anti_gen =
       new PTextAntialiasingGenerator();
-    final Generator<TextureFilterMinification> in_fmin_gen =
-      new TextureFilterMinificationGenerator();
-    final Generator<TextureFilterMagnification> in_fmag_gen =
-      new TextureFilterMagnificationGenerator();
+    final Generator<JCGLTextureFilterMinification> in_fmin_gen =
+      new JCGLTextureFilterMinificationGenerator();
+    final Generator<JCGLTextureFilterMagnification> in_fmag_gen =
+      new JCGLTextureFilterMagnificationGenerator();
     final Generator<PTextureType> in_ttype_gen = new PTextureTypeGenerator();
     final PTextUnmeasuredGenerator gen =
       new PTextUnmeasuredGenerator(
@@ -75,30 +76,23 @@ import com.io7m.jpismo.PTypefaceType;
 
     QuickCheck.forAllVerbose(
       gen,
-      new AbstractCharacteristic<PTextUnmeasured>() {
-        @Override protected void doSpecify(
-          final @Nullable PTextUnmeasured any)
+      new AbstractCharacteristic<PTextUnmeasuredType>()
+      {
+        @Override
+        protected void doSpecify(
+          final @Nullable PTextUnmeasuredType any)
         {
           assert any != null;
 
-          final PTextUnmeasured other = gen.next();
+          final PTextUnmeasuredType other = gen.next();
           Assert.assertEquals(any, any);
           Assert.assertNotEquals(any, other);
           Assert.assertNotEquals(other, any);
           Assert.assertNotEquals(any, Integer.valueOf(23));
           Assert.assertNotEquals(any, null);
 
-          final PTextUnmeasured same =
-            PTextUnmeasured.newText(
-              any.getTypeface(),
-              any.getFontSize(),
-              any.getWrappingMode(),
-              any.getText(),
-              any.getWrappingWidth(),
-              any.getAntialisingMode(),
-              any.getMinificationFilter(),
-              any.getMagnificationFilter(),
-              any.getTextureType());
+          final PTextUnmeasuredType same =
+            PTextUnmeasured.copyOf(any);
 
           Assert.assertEquals(same, any);
           Assert.assertEquals(any, same);
