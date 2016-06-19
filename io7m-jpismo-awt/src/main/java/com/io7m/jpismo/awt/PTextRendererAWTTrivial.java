@@ -74,7 +74,6 @@ import com.io7m.jtensors.Vector3FType;
 import com.io7m.jtensors.VectorM2F;
 import com.io7m.jtensors.VectorReadable2FType;
 import com.io7m.jtensors.VectorWritable2FType;
-import com.io7m.junreachable.UnimplementedCodeException;
 import com.io7m.junreachable.UnreachableCodeException;
 import net.jcip.annotations.NotThreadSafe;
 
@@ -759,7 +758,7 @@ public final class PTextRendererAWTTrivial implements
       PTextRendererAWTTrivial.setupFontAndAntialiasing(unmeasured, g);
 
     /**
-     * Set up the context required to measure the text.
+     * Set up the context required to measure and render the text.
      */
 
     final FontRenderContext frc =
@@ -810,7 +809,60 @@ public final class PTextRendererAWTTrivial implements
     final int width,
     final int height)
   {
-    throw new UnimplementedCodeException();
+    NullCheck.notNull(text, "Text");
+
+    final BufferedImage image =
+      PTextRendererAWTTrivial.makeImage(width, height, text.getTextureType());
+    final Graphics2D g = NullCheck.notNull(image.createGraphics());
+
+    /**
+     * Set up the font and antialiasing mode for the given text.
+     */
+
+    final Font font =
+      PTextRendererAWTTrivial.setupFontAndAntialiasing(text, g);
+
+    /**
+     * Set up the context required to measure and render the text.
+     */
+
+    final FontRenderContext frc = NullCheck.notNull(g.getFontRenderContext());
+    final float width_limit =
+      PTextRendererAWTTrivial.calculateWidthLimit(
+        font,
+        text.getWrappingMode(),
+        text.getWrappingWidth(),
+        frc);
+    final String text_data = text.getText();
+    final AttributedString as =
+      PTextRendererAWTTrivial.makeAttributedText(font, text_data);
+    final AttributedCharacterIterator as_iterator =
+      NullCheck.notNull(as.getIterator());
+    final LineBreakMeasurer measurer =
+      new LineBreakMeasurer(as_iterator, frc);
+
+    /**
+     * Render the image.
+     */
+
+    PTextRendererAWTTrivial.renderAndMeasure(
+      text_data,
+      as_iterator,
+      measurer,
+      width_limit,
+      this.size,
+      g,
+      true);
+
+    this.size.set2F((float) width, (float) height);
+    return PTextRendererAWTTrivial.makeCompiledText(
+      g33,
+      uc,
+      image,
+      this.size,
+      text.getTextureType(),
+      text.getMinificationFilter(),
+      text.getMagnificationFilter());
   }
 
   @Override
@@ -819,7 +871,97 @@ public final class PTextRendererAWTTrivial implements
     final JCGLTextureUnitContextParentType uc,
     final PTextUnmeasuredType text)
   {
-    throw new UnimplementedCodeException();
+    NullCheck.notNull(text, "Text");
+
+    /**
+     * Set up the font and antialiasing mode for the given text.
+     */
+
+    final Font font =
+      PTextRendererAWTTrivial.setupFontAndAntialiasing(text, this.scratch_g);
+
+    /**
+     * Because the text is unmeasured, it's necessary to measure it first
+     * so that an image size can be determined.
+     *
+     * Set up the context required to measure the text.
+     */
+
+    final FontRenderContext frc =
+      NullCheck.notNull(this.scratch_g.getFontRenderContext());
+    final float width_limit =
+      PTextRendererAWTTrivial.calculateWidthLimit(
+        font,
+        text.getWrappingMode(),
+        text.getWrappingWidth(),
+        frc);
+
+    final String text_data = text.getText();
+    final AttributedString as =
+      PTextRendererAWTTrivial.makeAttributedText(font, text_data);
+    final AttributedCharacterIterator as_iterator =
+      NullCheck.notNull(as.getIterator());
+
+    {
+      final LineBreakMeasurer measurer =
+        new LineBreakMeasurer(as_iterator, frc);
+
+      /**
+       * Render the text without actually drawing it, resulting in a
+       * complete set of measurements for the text.
+       */
+
+      PTextRendererAWTTrivial.renderAndMeasure(
+        text_data,
+        as_iterator,
+        measurer,
+        width_limit,
+        this.size,
+        this.scratch_g,
+        false);
+    }
+
+    /**
+     * Create a new image that will contain the results of rendering.
+     */
+
+    final int image_width = (int) Math.ceil((double) this.size.getXF());
+    final int image_height = (int) Math.ceil((double) this.size.getYF());
+    final BufferedImage image =
+      PTextRendererAWTTrivial.makeImage(
+        image_width,
+        image_height,
+        text.getTextureType());
+    final Graphics2D image_g = NullCheck.notNull(image.createGraphics());
+    PTextRendererAWTTrivial.setAntialiasingMode(text, image_g);
+
+    /**
+     * Render the image.
+     */
+
+    {
+      as_iterator.first();
+      final LineBreakMeasurer measurer =
+        new LineBreakMeasurer(as_iterator, frc);
+
+      PTextRendererAWTTrivial.renderAndMeasure(
+        text_data,
+        as_iterator,
+        measurer,
+        width_limit,
+        this.size,
+        image_g,
+        true);
+    }
+
+    return PTextRendererAWTTrivial.makeCompiledText(
+      g33,
+      uc,
+      image,
+      this.size,
+      text.getTextureType(),
+      text.getMinificationFilter(),
+      text.getMagnificationFilter());
   }
 
   @Override
