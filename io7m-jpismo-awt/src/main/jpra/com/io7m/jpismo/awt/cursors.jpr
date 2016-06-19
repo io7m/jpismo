@@ -1,0 +1,13 @@
+(package-begin com.io7m.jpismo.awt.cursors)
+
+(record PVertexP32U16 [
+  (field position [vector [float 32] 3])
+  (field uv       [vector [float 16] 2])
+])
+
+(record PVertexPU32 [
+  (field position [vector [float 32] 3])
+  (field uv       [vector [float 32] 2])
+])
+
+(package-end)
